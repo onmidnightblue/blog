@@ -1,6 +1,13 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -9,7 +16,7 @@ const geistSans = Geist({
 
 export const metadata: Metadata = {
   title: "Assembly Dining",
-  description: "길 모르는 신입 사원을 위한 국회 앞 맛집 가이드",
+  description: "길 모르는 여의도 신입 위한 국회 앞 맛집 가이드",
 };
 
 export default function RootLayout({
