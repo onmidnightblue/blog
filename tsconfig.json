@@ -21,7 +21,9 @@
     "paths": {
       "@/*": ["./*"],
       "@images": ["./src/assets/svgs/index"],
-      "@hooks": ["./src/hooks/index"]
+      "@images/*": ["./src/assets/svgs/*"],
+      "@hooks": ["./src/hooks/index"],
+      "@hooks/*": ["./src/hooks/*"]
     }
   },
   "include": [
