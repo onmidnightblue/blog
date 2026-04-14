@@ -23,7 +23,11 @@
       "@images": ["./src/assets/svgs/index"],
       "@images/*": ["./src/assets/svgs/*"],
       "@hooks": ["./src/hooks/index"],
-      "@hooks/*": ["./src/hooks/*"]
+      "@hooks/*": ["./src/hooks/*"],
+      "@constants": ["./src/constants/index"],
+      "@constants/*": ["./src/constants/*"],
+      "@types": ["./src/types/index"],
+      "@types/*": ["./src/types/*"]
     }
   },
   "include": [
