@@ -9,12 +9,14 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
 const Input = ({ label, error, loading, ...props }: Props) => {
   return (
     <div className="flex flex-col w-full gap-1.5">
-      {label && <label className="text-sm text-gray-500">{label}</label>}
+      {label && (
+        <label className="text-sm text-foreground-muted">{label}</label>
+      )}
       <div className="relative">
         <input
           className={`w-full p-2 outline-none transition-all focus:ring-1 rounded border border-gray-400 ${
             error
-              ? "border-red-600  focus:ring-red-500"
+              ? "text-error  focus:ring-red-500"
               : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
           }`}
           {...props}
@@ -25,7 +27,7 @@ const Input = ({ label, error, loading, ...props }: Props) => {
           </div>
         )}
       </div>
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      {error && <p className="text-xs text-error">{error}</p>}
     </div>
   );
 };

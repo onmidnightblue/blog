@@ -10,7 +10,7 @@ const Filter = ({}) => {
       <div className="relative">
         <label
           htmlFor="admin-search-input"
-          className="absolute -translate-y-1/2 top-1/2 left-2 h-f"
+          className="absolute -translate-y-1/2 top-1/2 left-2"
         >
           <SearchIcon />
         </label>
@@ -23,7 +23,7 @@ const Filter = ({}) => {
         />
       </div>
       <div
-        className="text-center transition duration-300 cursor-pointer select-none hover:text-blue-400 "
+        className="text-center text-foreground transition duration-300 cursor-pointer select-none hover:text-blue-400 "
         onClick={() => setSortOrder()}
       >
         {SORT_LABELS[sortOrder]}

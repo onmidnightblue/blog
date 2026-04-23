@@ -2,11 +2,14 @@
   "name": "assembly-dining",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://deepblueboard.com",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.103.0",

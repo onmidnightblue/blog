@@ -1,8 +1,9 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import debounce from "lodash.debounce";
 import { useRestaurantStore } from "@store";
+import { supabaseBrowser } from "@lib";
 
 export const useRestaurants = (id?: string) => {
   const queryClient = useQueryClient();
@@ -27,18 +28,11 @@ export const useRestaurants = (id?: string) => {
 
   // update
   const update = useMutation({
-    mutationFn: async ({
-      column,
-      value,
-    }: {
-      column: string;
-      value: string;
-    }) => {
+    mutationFn: async (updateData: Record<string, string>) => {
       if (!id) throw new Error("Not found restaurant ID");
       const { data } = await axios.patch("/api/restaurants", {
         id,
-        column,
-        value,
+        ...updateData,
       });
       if (!data.success) throw new Error(data.error);
       return data;
@@ -46,30 +40,55 @@ export const useRestaurants = (id?: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["restaurants"] });
     },
-    onError: (error) => {
-      console.error("Error:", error);
-    },
   });
 
+  // debounde
   const debouncedSave = useMemo(
     () =>
-      debounce((column: string, value: string) => {
-        update.mutate({ column, value });
+      debounce((updateData: Record<string, string>) => {
+        update.mutate(updateData);
       }, 200),
     [update]
   );
-
   useEffect(() => {
     return () => debouncedSave.cancel();
   }, [debouncedSave]);
 
+  //  subscribe
+  const supabase = useMemo(() => supabaseBrowser(), []);
+  const [channelName] = useState(
+    () => `restaurants-realtime-${Math.random().toString(36).substring(2, 9)}`
+  );
+  useEffect(() => {
+    const channel = supabase
+      .channel(channelName)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "restaurants",
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["restaurants"] });
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient, supabase, channelName]);
+
+  const activeField = update.variables
+    ? Object.keys(update.variables)[0]
+    : null;
   return {
     restaurants,
     isLoading,
     isError: isError || update.isError,
     saveToSupabase: debouncedSave,
-    updatingField: update.isPending ? update.variables?.column : null,
-    errorField: update.isError ? update.variables?.column : null,
+    updatingField: update.isPending ? activeField : null,
+    errorField: update.isError ? activeField : null,
     errorMessage: update.isError ? update.error.message : null,
   };
 };

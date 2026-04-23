@@ -5,11 +5,12 @@ import { RestaurantType } from "@types";
 
 interface MapPinProps {
   restaurant: RestaurantType;
-  onClick: () => void;
+  scale: number;
+  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
-const MapPin = ({ onClick, restaurant }: MapPinProps) => {
-  const { map_x, map_y } = restaurant || {};
+const MapPin = ({ onClick, scale, restaurant }: MapPinProps) => {
+  const { map_x, map_y, name } = restaurant || {};
 
   return (
     <div
@@ -17,7 +18,7 @@ const MapPin = ({ onClick, restaurant }: MapPinProps) => {
       style={{
         left: `${map_x}%`,
         top: `${map_y}%`,
-        transform: `translate(-50%, -50%)`,
+        transform: `translate(-50%, -50%) scale(${1 / scale})`,
       }}
       onClick={onClick}
     >
@@ -25,6 +26,7 @@ const MapPin = ({ onClick, restaurant }: MapPinProps) => {
         <div className="transition duration-300 hover:scale-120">
           <PinIcon />
         </div>
+        <div className="px-1 text-sm whitespace-nowrap">{name}</div>
       </div>
     </div>
   );

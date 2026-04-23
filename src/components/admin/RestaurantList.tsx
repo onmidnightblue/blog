@@ -5,15 +5,23 @@ import { useRestaurants } from "@hooks";
 import RestaurantListItem from "./RestaurantListItem";
 
 const RestaurantList = ({}) => {
-  const { isLoading, isError } = useRestaurants();
+  const { isLoading, isError, restaurants: freshData } = useRestaurants();
   const {
     filteredRestaurants: restaurants,
     visibleCount,
     loadMore,
+    setRestaurants,
   } = useRestaurantStore((state) => state);
   const observerTarget = useRef(null);
   const displayItems = restaurants.slice(0, visibleCount);
   const hasMore = restaurants.length > visibleCount;
+
+  //  fresh
+  useEffect(() => {
+    if (freshData) {
+      setRestaurants(freshData);
+    }
+  }, [freshData, setRestaurants]);
 
   // infinite scroll
   useEffect(() => {
@@ -55,7 +63,7 @@ const RestaurantList = ({}) => {
   if (isError) {
     return (
       <div className="p-8 text-center">
-        <p className="text-red-500">Someting Wrong!</p>
+        <p className="text-error">Someting Wrong!</p>
       </div>
     );
   }
@@ -64,11 +72,11 @@ const RestaurantList = ({}) => {
     <>
       <div>
         <ul className="p-4">
-          {displayItems?.map((restaurant: RestaurantType, index) => {
+          {displayItems?.map((restaurant: RestaurantType) => {
             const { id } = restaurant || {};
             return (
               <RestaurantListItem
-                key={`admin-restaurant-${id}-${index}`}
+                key={`admin-restaurant-${id}`}
                 restaurant={restaurant}
               />
             );

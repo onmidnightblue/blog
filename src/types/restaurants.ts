@@ -6,12 +6,13 @@ export interface RestaurantType {
   road_address: string;
   land_address: string;
   status_number: string;
-  status_name: string;
   x: string;
   y: string;
   map_x: string;
   map_y: string;
   created_at: string;
+  is_visible: string;
+  has_room: string;
 
   // original
   OPNSFTEAMCODE: string; // 개방자치단체코드

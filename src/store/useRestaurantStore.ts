@@ -7,12 +7,12 @@ export type SortOrder = keyof typeof SORT_LABELS;
 export const SORT_CYCLE: SortOrder[] = [
   "address_asc",
   "address_desc",
+  "coord_asc",
+  "coord_desc",
   "name_asc",
   "name_desc",
   "category_asc",
   "category_desc",
-  "coord_asc",
-  "coord_desc",
 ];
 
 interface RestaurantStore {

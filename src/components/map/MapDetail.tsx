@@ -19,31 +19,32 @@ const MapDetail = ({ selectedRestaurant, onClose }: Props) => {
       {
         label: "상태",
         data: status_number === "01" ? "영업중" : "폐업",
-        css: status_number === "01" ? "" : "text-red-600",
+        css: status_number === "01" ? "" : "text-error",
       },
       { data: land_address, label: "주소" },
     ],
   ];
 
-  const handleOpenNaverMap = (name: string, address: string) => {
-    const query = encodeURIComponent(`${name} ${address}`);
+  const handleOpenNaverMap = (name: string) => {
+    const query = encodeURIComponent(`여의도동 ${name}`);
     window.open(`https://map.naver.com/v5/search/${query}`, "_blank");
   };
 
   return (
     <div className="w-[calc(100%-2rem)] absolute bottom-4 left-1/2 -translate-x-1/2 z-100 bg-white rounded-4xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)] p-8 animate-slide-up">
       <div className="flex items-start justify-between mb-2">
-        <h2 className="text-2xl font-extrabold leading-tight text-gray-900">
-          {name}
-        </h2>
-        <button onClick={onClose} className="p-2 text-gray-500 rounded-full ">
+        <h2 className="text-2xl font-extrabold leading-tight">{name}</h2>
+        <button
+          onClick={onClose}
+          className="p-2 rounded-full text-foreground-muted "
+        >
           닫기
         </button>
       </div>
       <ViewComponent contents={contents} />
       <div
-        className="cursor-pointer"
-        onClick={() => handleOpenNaverMap(name, land_address)}
+        className="text-green-700 cursor-pointer"
+        onClick={() => handleOpenNaverMap(name)}
       >
         네이버지도
       </div>

@@ -25,7 +25,7 @@ export async function GET() {
       if (!row || row.length === 0) break;
       const filteredData = row.filter((item: RestaurantType) => {
         const { DTLSTATEGBN: isOperating, SITEWHLADDR: address } = item || {};
-        if (isOperating !== "01") return false;
+        if (isOperating !== "02") return false;
         if (!address.includes("여의도동")) return false;
         const match = address.match(/여의도동\s(\d+)/);
         if (match) {
@@ -37,14 +37,7 @@ export async function GET() {
 
       const mappedBatch = filteredData.map((item: RestaurantType) => ({
         id: item.MGTNO,
-        name: item.BPLCNM?.trim(),
-        category: item.UPTAENM,
-        phone: item.SITETEL?.trim(),
-        road_address: item.RDNWHLADDR?.trim(),
-        land_address: item.SITEWHLADDR?.trim(),
         status_number: item.TRDSTATEGBN,
-        x: item.X?.trim(),
-        y: item.Y?.trim(),
       }));
       restaurants = [...restaurants, ...mappedBatch];
       startIndex += BATCH_SIZE;
@@ -59,7 +52,7 @@ export async function GET() {
         .from("restaurants")
         .upsert(restaurants, {
           onConflict: "id",
-          ignoreDuplicates: true,
+          ignoreDuplicates: false,
         })
         .select("id");
 

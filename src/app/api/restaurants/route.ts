@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@lib";
+import { supabaseServer } from "@lib";
 
 export async function GET() {
   try {
+    const supabase = supabaseServer();
+    if (!supabase)
+      throw new Error("Failed to create ther server client instance.");
     const { data, error } = await supabase
       .from("restaurants")
       .select("*")
@@ -27,35 +30,25 @@ export async function GET() {
 export async function PATCH(request: Request) {
   try {
     const body = await request.json();
-    console.log("body", body);
-    const { id, column, value } = body;
+    const { id, ...updateData } = body;
 
-    if (!id || !column) {
+    if (!id) {
       return NextResponse.json(
-        { success: false, error: "Missing required fields" },
+        { success: false, error: "ID is required" },
         { status: 400 }
       );
     }
-    console.log(`[PATCH] start: id=${id}, col=${column}, val=${value}`);
 
-    const { data, error } = await supabase
+    const supabase = supabaseServer();
+    if (!supabase)
+      throw new Error("Failed to create ther server client instance.");
+    const { error } = await supabase
       .from("restaurants")
-      .update({ [column]: value })
-      .eq("id", id)
-      .select();
+      .update(updateData)
+      .eq("id", id);
 
-    if (error) {
-      console.error("❌ [ERROR]:", error);
-      return NextResponse.json(
-        { success: false, error: error.message, hint: error.hint },
-        { status: 400 } // RLS나 제약조건 위반은 400번대
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: data[0],
-    });
+    if (error) throw error;
+    return NextResponse.json({ success: true });
   } catch (error: unknown) {
     const message = (error as Error)?.message ?? "Internal Server Error";
     return NextResponse.json(

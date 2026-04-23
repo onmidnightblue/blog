@@ -12,7 +12,7 @@ const InnerInput = ({ label, error, loading, className, ...props }: Props) => {
       <div className="relative w-full text-sm">
         <input
           className={`
-       px-1 py-0.5 w-full bg-gray-100 outline-none
+       px-1 py-0.5 w-full bg-gray-100 outline-none text-foreground
             ${
               error
                 ? "border border-red-500 focus:border-red-600"
@@ -31,7 +31,7 @@ const InnerInput = ({ label, error, loading, className, ...props }: Props) => {
         )}
       </div>
       {error && (
-        <span className="mt-0.5 text-[10px] text-red-500 font-medium leading-none">
+        <span className="mt-0.5 text-[10px] text-error font-medium leading-none">
           {error}
         </span>
       )}

@@ -28,7 +28,7 @@ const Clock = () => {
       </p>
     </div>
   ) : (
-    <div className="flex items-center justify-center rounded h-13 w-30">
+    <div className="flex items-center justify-center h-13 w-30">
       <ClockIcon />
     </div>
   );

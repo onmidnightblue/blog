@@ -6,23 +6,26 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
 
   if (!session) {
     return (
-      <div className="h-dvh flex justify-center items-center">
+      <div className="flex items-center justify-center h-dvh">
         <form
           action={async () => {
             "use server";
             await signIn("google");
           }}
         >
-          <button type="submit">Signin with Google</button>
+          <button className="text-foreground" type="submit">
+            Sign in with Google
+          </button>
         </form>
       </div>
     );
   }
 
-  if (session?.user?.email !== process.env.ADMIN_EMAIL) {
+  const adminEmails = process.env.ADMIN_EMAILS?.split(",") || [];
+  if (!adminEmails.includes(session?.user?.email ?? "")) {
     return (
-      <div className="flex flex-col h-screen items-center justify-center text-red-800">
-        <h1 className="text-md font-bold">Access Denied.</h1>
+      <div className="flex flex-col items-center justify-center h-screen text-error">
+        <h1 className="font-bold text-md">Access Denied.</h1>
         <p>This area is restricted to administrators only.</p>
       </div>
     );

@@ -6,7 +6,7 @@ interface Props {
   updatingField: string | null;
   errorField: string | null;
   errorMessage: string | null;
-  saveToSupabase: (column: string, value: string) => void;
+  saveToSupabase: (updateData: Record<string, string>) => void;
 }
 
 const EditComponent = ({
@@ -15,51 +15,75 @@ const EditComponent = ({
   errorField,
   errorMessage,
   saveToSupabase,
-}: Props) =>
-  contents.map((content, rowindex) => (
-    <div key={rowindex} className="flex mb-1 text-gray-600">
-      {content.map((item, colIndex) => {
-        const { key, data, label, width, selectedOptions } = item || {};
-        const isUpdating = updatingField === key;
-        const isFailed = errorField === key;
-        return (
-          <div
-            key={`edit-${key}-${colIndex}`}
-            className={`${colIndex < content.length - 1 && S_DOT} 
+}: Props) => {
+  const handlePaste = async (e: React.ClipboardEvent) => {
+    const pasteData = e.clipboardData.getData("text");
+    const xMatch = pasteData.match(/[xX]\s*[::]?\s*([0-9.]+)/);
+    const yMatch = pasteData.match(/[yY]\s*[::]?\s*([0-9.]+)/);
+    if (xMatch && yMatch) {
+      e.preventDefault();
+      saveToSupabase({
+        map_x: xMatch[1],
+        map_y: yMatch[1],
+      });
+    }
+  };
+
+  return (
+    <div onPaste={handlePaste}>
+      {contents.map((content, rowindex) => (
+        <div key={rowindex} className="flex mb-1">
+          {content.map((item, colIndex) => {
+            const {
+              key,
+              data,
+              label,
+              width,
+              selectedOptions = [],
+            } = item || {};
+            const isUpdating = updatingField === key;
+            const isFailed = errorField === key;
+            return (
+              <div
+                key={`edit-${key}-${colIndex}`}
+                className={`${colIndex < content.length - 1 && S_DOT} 
        `}
-            style={{ flex: width || 1 }}
-          >
-            {key === "status_number" ? (
-              <select
-                defaultValue={data === "영업중" ? "01" : "02"}
-                className="w-full text-sm outline-none cursor-pointer"
-                onChange={(e) => saveToSupabase(key, e.target.value)}
+                style={{ flex: width || 1 }}
               >
-                {selectedOptions?.map(([optionValue, optionLabel]) => (
-                  <option
-                    key={`edit-view-${key}-${optionValue}`}
-                    value={optionValue}
+                {key === "status_number" || key === "is_visible" ? (
+                  <select
+                    value={data ?? selectedOptions?.[0]?.[0]}
+                    className="w-full text-sm bg-transparent outline-none cursor-pointer"
+                    onChange={(e) => saveToSupabase({ [key]: e.target.value })}
                   >
-                    {optionLabel}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <InnerInput
-                placeholder={label}
-                defaultValue={data || ""}
-                loading={isUpdating}
-                error={isFailed ? errorMessage : ""}
-                onChange={(e) => {
-                  if (key) saveToSupabase(key, e.target.value);
-                }}
-              />
-            )}
-          </div>
-        );
-      })}
+                    {selectedOptions?.map(([optionValue, optionLabel]) => (
+                      <option
+                        key={`edit-view-${key}-${optionValue}`}
+                        value={String(optionValue)}
+                      >
+                        {optionLabel}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <InnerInput
+                    placeholder={label}
+                    value={data || ""}
+                    loading={isUpdating}
+                    error={isFailed ? errorMessage : ""}
+                    onChange={(e) => {
+                      if (key) saveToSupabase({ [key]: e.target.value });
+                    }}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ))}
     </div>
-  ));
+  );
+};
 
 // css
 const S_DOT =

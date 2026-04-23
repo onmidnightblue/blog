@@ -8,7 +8,7 @@ const Filter = ({}) => {
   return (
     <div className="flex overflow-hidden">
       <div className="flex flex-col gap-2">
-        <p className="text-sm text-gray-600">카테고리</p>
+        <p className="text-sm text-foreground-muted">카테고리</p>
         <div className="flex flex-wrap gap-2">
           {categories.map((category) => {
             const isActive = selectedCategories.includes(category);
@@ -18,7 +18,9 @@ const Filter = ({}) => {
                 onClick={() => toggleCategory(category)}
                 className={`px-2 rounded-md transition cursor-pointer
                 ${
-                  isActive ? "bg-black text-white" : "bg-gray-100 text-gray-600"
+                  isActive
+                    ? "bg-black text-white"
+                    : "bg-gray-100 text-foreground-muted"
                 }
                 `}
               >

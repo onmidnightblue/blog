@@ -8,6 +8,7 @@ interface Props {
   restaurant: RestaurantType;
 }
 
+console.log(".");
 const RestaurantListItem = ({ restaurant }: Props) => {
   const {
     id,
@@ -18,6 +19,8 @@ const RestaurantListItem = ({ restaurant }: Props) => {
     phone,
     map_x,
     map_y,
+    is_visible,
+    has_room,
   } = restaurant || {};
   const [isEditMode, setIsEditMode] = useState(false);
   const { saveToSupabase, errorField, updatingField, errorMessage } =
@@ -25,14 +28,10 @@ const RestaurantListItem = ({ restaurant }: Props) => {
 
   const contents: ContentItem[][] = [
     [
-      { data: category, label: "카테고리", key: "category", width: 2 },
-      { data: phone, label: "전화번호", key: "phone", width: 8 },
-    ],
-    [
       {
         label: "상태",
-        data: status_number === "01" ? "영업중" : "폐업",
-        css: status_number === "02" ? "text-red-600" : "",
+        data: status_number || "01",
+        css: status_number === "02" ? "text-error" : "",
         key: "status_number",
         selectedOptions: [
           ["01", "영업중"],
@@ -40,8 +39,34 @@ const RestaurantListItem = ({ restaurant }: Props) => {
         ],
         width: 2,
       },
-      { data: land_address, label: "주소", key: "land_address", width: 8 },
+      {
+        label: "표시",
+        data: is_visible || "true",
+        css: is_visible === "false" ? "text-error" : "",
+        key: "is_visible",
+        selectedOptions: [
+          ["true", "표시함"],
+          ["false", "표시안함"],
+        ],
+        width: 2,
+      },
+      {
+        label: "룸",
+        data: has_room || "true",
+        css: has_room === "false" ? "text-error" : "",
+        key: "is_visible",
+        selectedOptions: [
+          ["true", "룸보유"],
+          ["false", "룸없음"],
+        ],
+        width: 2,
+      },
     ],
+    [
+      { data: category, label: "카테고리", key: "category", width: 2 },
+      { data: phone, label: "전화번호", key: "phone", width: 8 },
+    ],
+    [{ data: land_address, label: "주소", key: "land_address", width: 10 }],
     [
       { data: map_x, label: "x좌표", key: "map_x", width: 5 },
       { data: map_y, label: "y좌표", key: "map_y", width: 5 },
@@ -49,18 +74,21 @@ const RestaurantListItem = ({ restaurant }: Props) => {
   ];
 
   const handleOpenNaverMap = (name: string) => {
-    const query = encodeURIComponent(name);
+    const query = encodeURIComponent(`여의도동 ${name}`);
     window.open(`https://map.naver.com/v5/search/${query}`, "_blank");
   };
 
   return (
     <li className="relative py-2 border-b border-b-gray-200">
       <div className="flex flex-col">
-        <div
-          className="font-bold cursor-pointer"
-          onClick={() => handleOpenNaverMap(name)}
-        >
-          {name}
+        <div className="flex items-center gap-2">
+          <h3 className="font-bold">{name}</h3>
+          <span
+            className="text-xs text-green-700 cursor-pointer"
+            onClick={() => handleOpenNaverMap(name)}
+          >
+            NAVER
+          </span>
         </div>
         {isEditMode ? (
           <EditComponent
@@ -79,7 +107,7 @@ const RestaurantListItem = ({ restaurant }: Props) => {
       </div>
       <div
         className={`absolute top-2 right-0 text-right px-1 text-sm transition duration-300 border border-white rounded cursor-pointer hover:border-black ${
-          isEditMode ? "text-blue-400" : "text-black"
+          isEditMode ? "text-blue-400" : "text-foreground"
         } select-none`}
         onClick={() => setIsEditMode((prev) => !prev)}
       >
