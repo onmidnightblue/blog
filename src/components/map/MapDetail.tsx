@@ -1,6 +1,7 @@
 import ViewComponent from "@admin/restaurantListItem/ViewComponent";
 import { STATUS_LABELS } from "@constants";
 import { ContentItem, RestaurantType } from "@types";
+import { getOperatingHoursText } from "@utils";
 
 interface Props {
   selectedRestaurant: RestaurantType;
@@ -8,8 +9,14 @@ interface Props {
 }
 
 const MapDetail = ({ selectedRestaurant, onClose }: Props) => {
-  const { name, category, phone, land_address, status_number } =
-    selectedRestaurant || {};
+  const {
+    name,
+    category,
+    phone,
+    land_address,
+    status_number,
+    operating_hours,
+  } = selectedRestaurant || {};
 
   const contents: ContentItem[][] = [
     [
@@ -23,6 +30,13 @@ const MapDetail = ({ selectedRestaurant, onClose }: Props) => {
         css: status_number === "01" ? "" : "text-error",
       },
       { data: land_address, label: "주소" },
+    ],
+    [
+      {
+        data: getOperatingHoursText(operating_hours),
+        label: "운영시간",
+        key: "operatingHours",
+      },
     ],
   ];
 

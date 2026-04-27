@@ -25,6 +25,10 @@ export const SORT_CYCLE: SortOrder[] = [
   "coord_desc",
 ];
 export const COORD_CYCLE: CoordOrder[] = ["all", "with_coord", "no_coord"];
+export interface TimeFilter {
+  day: number; // 0 (일) ~ 6 (토)
+  time: string; // "HH:mm"
+}
 
 interface RestaurantStore {
   restaurants: RestaurantType[];
@@ -46,6 +50,8 @@ interface RestaurantStore {
   setSearchTerm: (term: string) => void;
   loadMore: () => void;
   resetFilters: () => void;
+  targetTimeFilter: TimeFilter | null;
+  setTargetTimeFilter: (filter: TimeFilter | null) => void;
 }
 
 export const useRestaurantStore = create<RestaurantStore>((set) => {
@@ -129,6 +135,9 @@ export const useRestaurantStore = create<RestaurantStore>((set) => {
     setVisibleOrder: (order) =>
       cycleOrder("visibleOrder", VISIBLE_CYCLE, order),
 
+    targetTimeFilter: null,
+    setTargetTimeFilter: (filter) => set({ targetTimeFilter: filter }),
+
     loadMore: () => set((state) => ({ visibleCount: state.visibleCount + 20 })),
 
     resetFilters: () =>
@@ -151,6 +160,7 @@ const applyFilters = (
   updates: Partial<RestaurantStore>
 ) => {
   const {
+    targetTimeFilter,
     restaurants,
     coordOrder,
     selectedCategories,
@@ -179,6 +189,41 @@ const applyFilters = (
       statusOrder === "all" || restaurant.status_number === statusOrder,
       visibleOrder === "all" || String(restaurant.is_visible) === visibleOrder,
     ];
+
+    if (targetTimeFilter) {
+      const { day, time } = targetTimeFilter;
+      const targetInt = parseInt(time.replace(":", ""));
+
+      const schedule = restaurant.operating_hours?.find(
+        (oh) => oh.day_of_week === day
+      );
+      if (!schedule || !schedule.open_time || !schedule.close_time)
+        return false;
+
+      const open = parseInt(
+        schedule.open_time.replace(/:/g, "").substring(0, 4)
+      );
+      let close = parseInt(
+        schedule.close_time.replace(/:/g, "").substring(0, 4)
+      );
+      if (close <= open) close += 2400;
+      const checkTime =
+        targetInt < open && targetInt < 600 ? targetInt + 2400 : targetInt;
+      const isOpen = checkTime >= open && checkTime < close;
+
+      // break time
+      const bStart = schedule.break_start
+        ? parseInt(schedule.break_start.replace(/:/g, "").substring(0, 4))
+        : null;
+      const bEnd = schedule.break_end
+        ? parseInt(schedule.break_end.replace(/:/g, "").substring(0, 4))
+        : null;
+      const isBreak =
+        bStart && bEnd ? checkTime >= bStart && checkTime < bEnd : false;
+
+      if (!isOpen || isBreak) return false;
+    }
+
     return conditions.every(Boolean);
   });
 

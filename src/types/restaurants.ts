@@ -1,3 +1,16 @@
+export interface OperatingHour {
+  id: number;
+  restaurant_id: string;
+  day_of_week: number;
+  is_off: boolean;
+  open_time: string | null;
+  close_time: string | null;
+  break_start: string | null;
+  break_end: string | null;
+  last_order: string | null;
+  created_at: string;
+}
+
 export interface RestaurantType {
   id: string;
   name: string;
@@ -14,6 +27,7 @@ export interface RestaurantType {
   is_visible: string;
   has_room: string;
   keyword: string;
+  operating_hours: OperatingHour[];
 
   // original
   OPNSFTEAMCODE: string; // 개방자치단체코드
@@ -70,3 +84,11 @@ export interface ContentItem {
   width?: number;
   selectedOptions?: [string, string][];
 }
+
+export interface Comment {
+  id: number;
+  restaurant_id: string;
+  content: string;
+  created_at: string;
+}
+export type UpdateType = "OPERATING_HOURS" | "COMMENTS" | "RESTAURANTS";

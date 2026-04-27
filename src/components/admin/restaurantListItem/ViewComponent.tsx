@@ -1,5 +1,4 @@
 import { ContentItem } from "@types";
-import { useMemo } from "react";
 
 interface Props {
   contents: ContentItem[][];

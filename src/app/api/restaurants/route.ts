@@ -1,22 +1,31 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@lib";
+import { UpdateType } from "@types";
 
 export async function GET() {
   try {
     const supabase = supabaseServer();
     if (!supabase)
-      throw new Error("Failed to create ther server client instance.");
+      throw new Error("Failed to create the server client instance.");
     const { data, error } = await supabase
       .from("restaurants")
-      .select("*")
-      .order("land_address", { ascending: true });
+      .select(`*, operating_hours(*), comments(*)`)
+      .order("land_address", { ascending: true })
+      .order("day_of_week", {
+        referencedTable: "operating_hours",
+        ascending: true,
+      })
+      .order("created_at", {
+        referencedTable: "comments",
+        ascending: false,
+      });
 
     if (error) throw error;
 
     return NextResponse.json({
       success: true,
-      count: data.length,
-      restaurants: data,
+      count: data?.length ?? 0,
+      restaurants: data ?? [],
     });
   } catch (error: unknown) {
     const message = (error as Error)?.message ?? "Internal Server Error";
@@ -30,24 +39,67 @@ export async function GET() {
 export async function PATCH(request: Request) {
   try {
     const body = await request.json();
-    const { id, ...updateData } = body;
+    const { id, type, ...updateData } = body;
 
-    if (!id) {
+    const hasValidId = id !== undefined && id !== null && id !== "";
+    const tableMap: Record<UpdateType, string> = {
+      OPERATING_HOURS: "operating_hours",
+      COMMENTS: "comments",
+      RESTAURANTS: "restaurants",
+    };
+    const targetTable = tableMap[(type as UpdateType) || "RESTAURANTS"];
+
+    const supabase = supabaseServer();
+    if (!supabase)
+      throw new Error("Failed to create the server client instance.");
+
+    const { error } = await supabase
+      .from(targetTable)
+      .upsert(hasValidId ? { id, ...updateData } : { ...updateData });
+
+    if (error) {
       return NextResponse.json(
-        { success: false, error: "ID is required" },
+        { success: false, error: error.message },
         { status: 400 }
       );
     }
 
+    return NextResponse.json({ success: true });
+  } catch (error: unknown) {
+    const message = (error as Error)?.message ?? "Internal Server Error";
+    return NextResponse.json(
+      { success: false, error: message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+    const type = searchParams.get("type") as UpdateType | null;
+
+    if (!id || !type)
+      return NextResponse.json(
+        { success: false, error: "ID and Type required" },
+        { status: 400 }
+      );
+
     const supabase = supabaseServer();
     if (!supabase)
-      throw new Error("Failed to create ther server client instance.");
-    const { error } = await supabase
-      .from("restaurants")
-      .update(updateData)
-      .eq("id", id);
+      throw new Error("Failed to create the server client instance.");
 
+    const tableMap: Partial<Record<UpdateType, string>> = {
+      COMMENTS: "comments",
+      OPERATING_HOURS: "operating_hours",
+    };
+    const targetTable = tableMap[type];
+    if (!targetTable) throw new Error("Invalid delete type");
+
+    const { error } = await supabase.from(targetTable).delete().eq("id", id);
     if (error) throw error;
+
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
     const message = (error as Error)?.message ?? "Internal Server Error";

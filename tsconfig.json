@@ -27,6 +27,7 @@
       "@lib": ["src/lib/index"],
       "@providers": ["src/providers/index"],
       "@store": ["src/store/index"],
+      "@utils": ["src/utils/index"],
       "@auth": ["src/app/auth.ts"],
       "@admin/*": ["src/components/admin/*"],
       "@components/common": ["src/components/common/index.ts"]

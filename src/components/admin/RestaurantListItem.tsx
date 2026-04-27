@@ -3,6 +3,7 @@ import { useRestaurants } from "@hooks";
 import { ContentItem, RestaurantType } from "@types";
 import EditComponent from "./restaurantListItem/EditComponent";
 import ViewComponent from "./restaurantListItem/ViewComponent";
+import { getOperatingHoursText } from "@utils";
 
 interface Props {
   restaurant: RestaurantType;
@@ -23,8 +24,14 @@ const RestaurantListItem = ({ restaurant }: Props) => {
     has_room,
   } = restaurant || {};
   const [isEditMode, setIsEditMode] = useState(false);
-  const { saveToSupabase, errorField, isLoading, errorMessage } =
-    useRestaurants(id);
+  const {
+    saveOperatingHours,
+    operatingHours,
+    saveToSupabase,
+    errorField,
+    isLoading,
+    errorMessage,
+  } = useRestaurants(id);
 
   const contents: ContentItem[][] = [
     [
@@ -34,7 +41,7 @@ const RestaurantListItem = ({ restaurant }: Props) => {
         css: status_number === "02" ? "text-error" : "",
         key: "status_number",
         selectedOptions: [
-          ["01", "영업중"],
+          ["01", "운영"],
           ["02", "폐업"],
         ],
         width: 2,
@@ -54,7 +61,7 @@ const RestaurantListItem = ({ restaurant }: Props) => {
         label: "룸",
         data: has_room || "true",
         css: has_room === "false" ? "text-error" : "",
-        key: "is_visible",
+        key: "has_room",
         selectedOptions: [
           ["true", "룸보유"],
           ["false", "룸없음"],
@@ -77,7 +84,7 @@ const RestaurantListItem = ({ restaurant }: Props) => {
     [
       {
         data: keyword,
-        label: "된장찌개, 청국장, 파스타, 복어, 갈치조림",
+        label: "된장찌개, 파스타",
         key: "keyword",
         width: 10,
       },
@@ -85,6 +92,13 @@ const RestaurantListItem = ({ restaurant }: Props) => {
     [
       { data: map_x, label: "22.80", key: "map_x", width: 5 },
       { data: map_y, label: "25.58", key: "map_y", width: 5 },
+    ],
+    [
+      {
+        data: getOperatingHoursText(operatingHours),
+        label: "운영시간",
+        key: "operatingHours",
+      },
     ],
   ];
 
@@ -108,9 +122,11 @@ const RestaurantListItem = ({ restaurant }: Props) => {
         {isEditMode ? (
           <EditComponent
             contents={contents}
+            operatingHours={operatingHours}
             errorField={errorField}
             errorMessage={errorMessage}
             saveToSupabase={saveToSupabase}
+            saveOperatingHours={saveOperatingHours}
           />
         ) : (
           <ViewComponent contents={contents} />
