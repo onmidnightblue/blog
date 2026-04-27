@@ -35,7 +35,7 @@ const MapDetail = ({ selectedRestaurant, onClose }: Props) => {
       {
         data: getOperatingHoursText(operating_hours),
         label: "운영시간",
-        key: "operatingHours",
+        key: "operating_hours",
       },
     ],
   ];

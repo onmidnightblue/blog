@@ -127,6 +127,7 @@ const EditComponent = ({
               selectedOptions = [],
             } = item || {};
             const isFailed = errorField === key;
+            if (key === "operating_hours") return;
             return (
               <div
                 key={`edit-${key}-${colIndex}`}

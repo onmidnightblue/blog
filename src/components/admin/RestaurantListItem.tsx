@@ -97,7 +97,7 @@ const RestaurantListItem = ({ restaurant }: Props) => {
       {
         data: getOperatingHoursText(operatingHours),
         label: "운영시간",
-        key: "operatingHours",
+        key: "operating_hours",
       },
     ],
   ];
