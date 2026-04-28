@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, useEffect, useState } from "react";
+import { InputHTMLAttributes, useState } from "react";
 import SmallLoadingSpinner from "../loading/SmallLoadingSpinner";
 
 interface Props
@@ -21,26 +21,24 @@ const InnerInput = ({
   ...props
 }: Props) => {
   const [localValue, setLocalValue] = useState(value || "");
-  const [prevValue, setPrevValue] = useState(value);
+  const [isFocused, setIsFocused] = useState(false);
 
-  if (value !== prevValue) {
-    setLocalValue(value);
-    setPrevValue(value);
-  }
+  const displayValue = isFocused ? localValue : value;
 
-  const handleBlur = () => {
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    setIsFocused(false);
     if (validate && localValue !== "" && !validate(localValue)) {
       setLocalValue(value);
     }
+    props.onBlur?.(e);
   };
+
+  const handleFocus = () => setIsFocused(true);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setLocalValue(newValue);
-    const isValid = validate ? validate(newValue) : true;
-    if (newValue === "" || isValid) {
-      onChange(newValue);
-    }
+    if (newValue === "" || !validate || validate(newValue)) onChange(newValue);
   };
 
   return (
@@ -49,16 +47,13 @@ const InnerInput = ({
         <input
           className={`
        px-1 py-0.5 w-full bg-gray-100 outline-none text-foreground
-            ${
-              error
-                ? "border border-red-500 focus:border-red-600"
-                : "border-blue-200 hover:border-blue-300"
-            }
+            ${error ? "border border-red-500" : "border-blue-200"}
             ${loading ? "pr-6 opacity-70" : ""}
           `}
-          value={localValue}
+          value={displayValue}
           placeholder={label}
           onChange={handleChange}
+          onFocus={handleFocus}
           onBlur={handleBlur}
           onKeyDown={(e) => {
             if (e.key === "Enter") (e.target as HTMLInputElement).blur();

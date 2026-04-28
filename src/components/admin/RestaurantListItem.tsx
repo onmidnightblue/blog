@@ -35,75 +35,6 @@ const RestaurantListItem = ({ restaurant }: Props) => {
     errorMessage,
   } = useRestaurants(id);
 
-  const contents: RestaurantListItemType[][] = [
-    [
-      {
-        label: "상태",
-        data: status_number || "01",
-        css: status_number === "01" ? "" : "text-error",
-        key: "status_number",
-        selectedOptions: [
-          ["01", "운영"],
-          ["03", "폐업"],
-        ],
-        width: 2,
-      },
-      {
-        label: "표시",
-        data: is_visible || "true",
-        css: is_visible === "false" ? "text-error" : "",
-        key: "is_visible",
-        selectedOptions: [
-          ["true", "표시함"],
-          ["false", "표시안함"],
-        ],
-        width: 2,
-      },
-      {
-        label: "룸",
-        data: has_room || "true",
-        css: has_room === "false" ? "text-error" : "",
-        key: "has_room",
-        selectedOptions: [
-          ["true", "룸보유"],
-          ["false", "룸없음"],
-        ],
-        width: 2,
-      },
-    ],
-    [
-      { data: category, label: "치킨", key: "category", width: 2 },
-      { data: phone, label: "02-1234-1234", key: "phone", width: 8 },
-    ],
-    [
-      {
-        data: land_address,
-        label: "서울특별시 영등포구 여의도동 1",
-        key: "land_address",
-        width: 10,
-      },
-    ],
-    [
-      {
-        data: keyword,
-        label: "된장찌개, 파스타",
-        key: "keyword",
-        width: 10,
-      },
-    ],
-    [
-      { data: map_x, label: "22.80", key: "map_x", width: 5 },
-      { data: map_y, label: "25.58", key: "map_y", width: 5 },
-    ],
-    [
-      {
-        data: getOperatingHoursText(operatingHours),
-        label: "운영시간",
-        key: "operating_hours",
-      },
-    ],
-  ];
-
   const handleOpenNaverMap = (name: string) => {
     const query = encodeURIComponent(`여의도 ${name}`);
     window.open(`https://map.naver.com/v5/search/${query}`, "_blank");
@@ -123,7 +54,7 @@ const RestaurantListItem = ({ restaurant }: Props) => {
         </div>
         {isEditMode ? (
           <EditComponent
-            contents={contents}
+            restaurant={restaurant}
             operatingHours={operatingHours}
             errorId={errorId}
             errorMessage={errorMessage}
@@ -132,7 +63,10 @@ const RestaurantListItem = ({ restaurant }: Props) => {
             saveOperatingHoursDirect={saveOperatingHoursDirect}
           />
         ) : (
-          <ViewComponent contents={contents} />
+          <ViewComponent
+            restaurant={restaurant}
+            operatingHours={operatingHours}
+          />
         )}
         {isEditMode && (
           <div className="mt-4 text-xs text-blue-400">ID: {id}</div>

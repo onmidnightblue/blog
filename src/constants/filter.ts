@@ -16,15 +16,15 @@ export const COORD_LABELS: Record<string, string> = {
 };
 
 export const STATUS_LABELS: Record<string, string> = {
-  all: "전체상태",
   "01": "영업중",
   "03": "폐업",
+  all: "전체상태",
 };
 
 export const VISIBLE_LABELS: Record<string, string> = {
-  all: "전체표시",
   true: "표시함",
   false: "표시안함",
+  all: "전체표시",
 };
 
 export const STATUS_CYCLE = Object.keys(

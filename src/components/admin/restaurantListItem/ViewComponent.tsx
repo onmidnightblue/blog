@@ -1,46 +1,76 @@
-import { RestaurantListItemType } from "@types";
+import { OperatingHourType, RestaurantType } from "@types";
+import { getOperatingHoursText } from "@utils";
 
 interface Props {
-  contents: RestaurantListItemType[][];
+  restaurant: RestaurantType;
+  operatingHours: OperatingHourType[];
 }
 
-const ViewComponent = ({ contents }: Props) => {
+const ViewComponent = ({ restaurant, operatingHours }: Props) => {
+  const {
+    status_number,
+    is_visible,
+    has_room,
+    category,
+    phone,
+    land_address,
+    keyword,
+    map_x,
+    map_y,
+  } = restaurant;
+
+  const getHighlightColor = (isError: boolean) =>
+    isError ? "text-error" : "text-foreground";
+
   return (
-    <>
-      {contents.map((content, rowindex) => (
-        <div key={rowindex} className="flex">
-          {content.map((item, colIndex) => {
-            const { data, label, key, css, selectedOptions } = item || {};
-            const textColor = css
-              ? css
-              : data
-              ? "text-foreground"
-              : "text-placeholder";
-
-            const displayValue = (() => {
-              if (selectedOptions && data !== undefined) {
-                const option = selectedOptions.find(
-                  ([val]) => String(val) === String(data)
-                );
-                return option ? option[1] : data;
-              }
-              return data || label;
-            })();
-
-            return (
-              <div
-                key={`edit-${key}-${colIndex}`}
-                className={`w-fit ${
-                  colIndex < content.length - 1 && S_DOT
-                } ${textColor} break-keep`}
-              >
-                {displayValue}
-              </div>
-            );
-          })}
-        </div>
-      ))}
-    </>
+    <div>
+      <div className="flex items-center">
+        <span
+          className={`${getHighlightColor(status_number !== "01")} ${S_DOT}`}
+        >
+          {status_number === "01" ? "운영" : "폐업"}
+        </span>
+        <span className={`${getHighlightColor(!is_visible)} ${S_DOT}`}>
+          {is_visible ? "표시함" : "표시안함"}
+        </span>
+        <span className={getHighlightColor(!has_room)}>
+          {has_room ? "룸보유" : "룸없음"}
+        </span>
+      </div>
+      <div className="flex items-center">
+        <span
+          className={`${
+            category ? "text-foreground" : "text-placeholder"
+          } ${S_DOT}`}
+        >
+          {category || "카테고리"}
+        </span>
+        <span className={phone ? "text-foreground" : "text-placeholder"}>
+          {phone || "전화번호"}
+        </span>
+      </div>
+      <div className={land_address ? "text-foreground" : "text-placeholder"}>
+        {land_address || "주소"}
+      </div>
+      <div className={keyword ? "text-foreground" : "text-placeholder"}>
+        {keyword || "키워드"}
+      </div>
+      <div className="flex items-center">
+        <span
+          className={`${S_DOT} ${
+            map_x ? "text-foreground" : "text-placeholder"
+          }`}
+        >
+          {map_x || "X좌표"}
+        </span>
+        <span className={`${map_y ? "text-foreground" : "text-placeholder"}`}>
+          {map_y || "Y좌표"}
+        </span>
+      </div>
+      <div className="text-gray-600">
+        {getOperatingHoursText(operatingHours) || "운영시간"}
+      </div>
+    </div>
   );
 };
 

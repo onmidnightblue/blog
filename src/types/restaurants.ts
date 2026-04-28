@@ -99,8 +99,6 @@ export interface CommentType {
   created_at: string;
 }
 
-export type SupabaseUpdateType = "OPERATING_HOURS" | "COMMENTS" | "RESTAURANTS";
-
 export type StatusFilterType = keyof typeof STATUS_LABELS;
 export type CoordFilterType = keyof typeof COORD_LABELS;
 export type VisibleFilterType = keyof typeof VISIBLE_LABELS;
@@ -110,3 +108,6 @@ export interface TimeType {
   day: number; // 0 (일) ~ 6 (토)
   time: string; // "HH:mm"
 }
+
+export type SupabaseUpdateType = "OPERATING_HOURS" | "COMMENTS" | "RESTAURANTS";
+export type SupabaseValue = string | number | boolean | null;

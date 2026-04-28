@@ -1,18 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { OperatingHourType, SupabaseUpdateType } from "@types";
+import {
+  OperatingHourType,
+  RestaurantType,
+  SupabaseUpdateType,
+  SupabaseValue,
+} from "@types";
 import axios, { AxiosError } from "axios";
 import debounce from "lodash.debounce";
 import { useCallback, useEffect, useMemo } from "react";
 import { v4 } from "uuid";
-
-type SupabaseValue =
-  | string
-  | number
-  | boolean
-  | null
-  | undefined
-  | string[]
-  | number[];
 
 interface ApiErrorResponse {
   success: boolean;
@@ -20,17 +16,14 @@ interface ApiErrorResponse {
   message?: string;
 }
 
-export const useRestaurantMutations = (
-  id?: string,
-  initialHours: OperatingHourType[] = []
-) => {
+export const useRestaurantMutations = (id?: string) => {
   const queryClient = useQueryClient();
 
   const invalidate = useMemo(
     () =>
       debounce(
         () => queryClient.invalidateQueries({ queryKey: ["restaurants"] }),
-        1000
+        300
       ),
     [queryClient]
   );
@@ -48,52 +41,58 @@ export const useRestaurantMutations = (
       });
       return data;
     },
-    onSettled: invalidate,
-    onError: (error: AxiosError<ApiErrorResponse>) => {
-      const detail = error.response?.data?.error || error.message;
-      console.error("❌ [DB Update Failed]:", detail);
-    },
-  });
+    onMutate: async (newVars) => {
+      await queryClient.cancelQueries({ queryKey: ["restaurants"] });
+      const previous = queryClient.getQueryData<RestaurantType[]>([
+        "restaurants",
+      ]);
 
-  const getHourPayload = useCallback(
-    (payload: { id: string | number; data: Partial<OperatingHourType> }) => {
-      const day =
-        typeof payload.data.day_of_week === "number"
-          ? payload.data.day_of_week
-          : typeof payload.id === "number"
-          ? payload.id
-          : 0;
-      const existing = initialHours.find(
-        (oh) => Number(oh.day_of_week) === Number(day)
-      );
-      return {
-        finalId:
-          existing?.id || (typeof payload.id === "string" ? payload.id : v4()),
-        data: {
-          ...payload.data,
-          restaurant_id: id,
-          day_of_week: day,
-        } as Record<string, SupabaseValue>,
-      };
+      queryClient.setQueryData<RestaurantType[]>(["restaurants"], (old) => {
+        if (!old) return [];
+        return old.map((rest) => {
+          if (newVars.type === "RESTAURANTS" && rest.id === newVars.id) {
+            return { ...rest, ...newVars.data };
+          }
+          if (newVars.type === "OPERATING_HOURS" && rest.id === id) {
+            const updatedHours = rest.operating_hours.map((oh) =>
+              oh.id === newVars.id ? { ...oh, ...newVars.data } : oh
+            );
+            return { ...rest, operating_hours: updatedHours };
+          }
+          return rest;
+        });
+      });
+      return { previous };
     },
-    [id, initialHours]
-  );
+    onError: (err, _, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["restaurants"], context.previous);
+      }
+    },
+    onSettled: invalidate,
+  });
 
   const saveOperatingHours = useMemo(
     () =>
-      debounce((payload) => {
-        const { finalId, data } = getHourPayload(payload);
-        mutation.mutate({ id: finalId, data, type: "OPERATING_HOURS" });
+      debounce((payload: { id: number; data: Partial<OperatingHourType> }) => {
+        mutation.mutate({
+          id: payload.id,
+          data: payload.data as Record<string, SupabaseValue>,
+          type: "OPERATING_HOURS",
+        });
       }, 300),
-    [getHourPayload, mutation]
+    [mutation]
   );
 
   const saveOperatingHoursDirect = useCallback(
-    (payload: { id: string | number; data: Partial<OperatingHourType> }) => {
-      const { finalId, data } = getHourPayload(payload);
-      mutation.mutate({ id: finalId, data, type: "OPERATING_HOURS" });
+    (payload: { id: number; data: Partial<OperatingHourType> }) => {
+      mutation.mutate({
+        id: payload.id,
+        data: payload.data as Record<string, SupabaseValue>,
+        type: "OPERATING_HOURS",
+      });
     },
-    [getHourPayload, mutation]
+    [mutation]
   );
 
   const saveToSupabase = useMemo(
@@ -103,6 +102,12 @@ export const useRestaurantMutations = (
       }, 100),
     [id, mutation]
   );
+
+  const errorMessage = useMemo(() => {
+    if (!mutation.error) return null;
+    const axiosError = mutation.error as AxiosError<ApiErrorResponse>;
+    return axiosError.response?.data?.error || axiosError.message;
+  }, [mutation.error]);
 
   useEffect(() => {
     return () => {
@@ -115,9 +120,8 @@ export const useRestaurantMutations = (
     saveToSupabase,
     saveOperatingHours,
     saveOperatingHoursDirect,
-    activeId: mutation.isPending ? mutation.variables?.id : null,
-    errorId: mutation.isError ? mutation.variables?.id : null,
-    errorMessage: mutation.error as AxiosError<ApiErrorResponse> | null,
     isUpdating: mutation.isPending,
+    errorId: mutation.isError ? mutation.variables?.id : null,
+    errorMessage,
   };
 };

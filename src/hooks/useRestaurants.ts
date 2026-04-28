@@ -36,7 +36,7 @@ export const useRestaurants = (id?: string) => {
     errorMessage: mutationError,
     isUpdating,
     ...mutations
-  } = useRestaurantMutations(id, operatingHours);
+  } = useRestaurantMutations(id);
 
   const mergeErrorMessage = useMemo(() => {
     const err = fetchError || mutationError;
