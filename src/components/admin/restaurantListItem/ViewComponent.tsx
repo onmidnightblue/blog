@@ -7,6 +7,7 @@ interface Props {
 
 const ViewComponent = ({ restaurant }: Props) => {
   const {
+    name,
     status_number,
     is_visible,
     has_room,
@@ -19,11 +20,25 @@ const ViewComponent = ({ restaurant }: Props) => {
     operating_hours,
   } = restaurant;
 
+  const handleOpenNaverMap = (name: string) => {
+    const query = encodeURIComponent(`여의도 ${name}`);
+    window.open(`https://map.naver.com/v5/search/${query}`, "_blank");
+  };
+
   const getHighlightColor = (isError: boolean) =>
     isError ? "text-error" : "text-foreground";
 
   return (
     <div>
+      <div className="flex items-center gap-2">
+        <h3 className="font-bold">{name}</h3>
+        <span
+          className="text-xs text-green-700 cursor-pointer"
+          onClick={() => handleOpenNaverMap(name)}
+        >
+          NAVER
+        </span>
+      </div>
       <div className="flex items-center">
         <span
           className={`${getHighlightColor(status_number !== "01")} ${S_DOT}`}

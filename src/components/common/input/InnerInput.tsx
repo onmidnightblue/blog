@@ -23,7 +23,11 @@ const InnerInput = ({
   const [localValue, setLocalValue] = useState(value || "");
   const [isFocused, setIsFocused] = useState(false);
 
-  const displayValue = isFocused ? localValue : value;
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    setLocalValue(value);
+    setIsFocused(true);
+    props.onFocus?.(e);
+  };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsFocused(false);
@@ -33,11 +37,6 @@ const InnerInput = ({
     props.onBlur?.(e);
   };
 
-  const handleFocus = () => {
-    setLocalValue(value);
-    setIsFocused(true);
-  };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setLocalValue(newValue);
@@ -45,6 +44,8 @@ const InnerInput = ({
       onChange(newValue);
     }
   };
+
+  const displayValue = isFocused ? localValue : value;
 
   return (
     <div className="flex flex-col w-full">

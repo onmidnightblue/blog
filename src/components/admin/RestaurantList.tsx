@@ -65,29 +65,30 @@ const RestaurantList = ({}) => {
   }
 
   return (
-    <>
-      <div>
-        <ul className="p-4">
-          {displayItems?.map((restaurant: RestaurantType) => {
-            const { id } = restaurant || {};
-            return (
-              <RestaurantListItem
-                key={`admin-restaurant-${id}`}
-                restaurant={restaurant}
-              />
-            );
-          })}
-        </ul>
-        {hasMore && (
-          <div
-            ref={observerTarget}
-            className="relative flex items-center justify-center w-full py-10 overflow-hidden rounded-full animate-pulse"
-          >
-            <div className="w-12 h-12 mb-4 border-4 border-gray-300 rounded-full border-t-gray-600 animate-spin"></div>
-          </div>
-        )}
-      </div>
-    </>
+    <div>
+      <p className="px-4 pt-4 text-center font-bold">
+        {restaurants.length || 0} restaurants
+      </p>
+      <ul className="p-4">
+        {displayItems?.map((restaurant: RestaurantType) => {
+          const { id } = restaurant || {};
+          return (
+            <RestaurantListItem
+              key={`admin-restaurant-${id}`}
+              restaurant={restaurant}
+            />
+          );
+        })}
+      </ul>
+      {hasMore && (
+        <div
+          ref={observerTarget}
+          className="relative flex items-center justify-center w-full py-10 overflow-hidden rounded-full animate-pulse"
+        >
+          <div className="w-12 h-12 mb-4 border-4 border-gray-300 rounded-full border-t-gray-600 animate-spin"></div>
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@lib";
 import { SupabaseUpdateType } from "@types";
+import { TIME_REGEX } from "@constants";
 
 export async function GET() {
   try {
@@ -60,11 +61,10 @@ export async function PATCH(request: Request) {
         "break_end",
         "last_order",
       ];
-      const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
       for (const key of timeFields) {
         const value = updateData[key];
-        if (value && typeof value === "string" && !timeRegex.test(value)) {
+        if (value && typeof value === "string" && !TIME_REGEX.test(value)) {
           return NextResponse.json(
             {
               success: false,
@@ -91,8 +91,13 @@ export async function PATCH(request: Request) {
     const upsertPayload = { ...updateData };
     if (id) upsertPayload.id = id;
 
+    let onConflict = "id";
+    if (type === "OPERATING_HOURS") {
+      onConflict = "restaurant_id, day_of_week";
+    }
+
     const { error } = await supabase.from(targetTable).upsert(upsertPayload, {
-      onConflict: "id",
+      onConflict,
     });
 
     if (error) {

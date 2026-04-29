@@ -14,6 +14,11 @@ const EditBasicInfo = ({
   errorMessage,
   saveToSupabase,
 }: Props) => {
+  const handleOpenNaverMap = (name: string) => {
+    const query = encodeURIComponent(`여의도 ${name}`);
+    window.open(`https://map.naver.com/v5/search/${query}`, "_blank");
+  };
+
   const STATUS_OPTIONS: [string, string][] = [
     ["01", "운영"],
     ["03", "폐업"],
@@ -30,6 +35,22 @@ const EditBasicInfo = ({
   return (
     <div>
       <div className="flex flex-col gap-2">
+        <div className="grid grid-cols-3 gap-2">
+          <InnerInput
+            label="이름"
+            value={restaurant.name || ""}
+            onChange={(v) => saveToSupabase({ name: v })}
+            error={errorId === "name" ? errorMessage : null}
+          />
+          <div>
+            <span
+              className="text-xs text-green-700 cursor-pointer"
+              onClick={() => handleOpenNaverMap(restaurant.name)}
+            >
+              NAVER
+            </span>
+          </div>
+        </div>
         <div className="grid grid-cols-3 gap-2">
           <Select
             options={STATUS_OPTIONS}

@@ -16,7 +16,7 @@ export const COORD_LABELS: Record<string, string> = {
 };
 
 export const STATUS_LABELS: Record<string, string> = {
-  "01": "영업중",
+  "01": "운영",
   "03": "폐업",
   all: "전체상태",
 };

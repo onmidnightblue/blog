@@ -6,4 +6,4 @@ export const TIME_FIELDS = [
   { key: "break_end", label: "Break End", placeholder: "17:00" },
 ];
 
-export const TIME_REGEX = /^([01]\d|2[0-3]):([0-5]\d)$/;
+export const TIME_REGEX = /^(([01]\d|2[0-3]):([0-5]\d)|24:00)$/;

@@ -22,17 +22,25 @@ export const useRestaurantMutations = (restaurantId?: string) => {
       queryClient.setQueryData<RestaurantType[]>(["restaurants"], (old) => {
         if (!old) return [];
         return old.map((rest) =>
-          rest.id === newData.id ? { ...rest, ...newData } : rest
+          rest.id === restaurantId ? { ...rest, ...newData } : rest
         );
       });
       return { previous };
+    },
+    onSuccess: (responseData) => {
+      queryClient.setQueryData<RestaurantType[]>(["restaurants"], (old) => {
+        if (!old) return [];
+        return old.map((rest) =>
+          rest.id === restaurantId ? { ...rest, ...responseData } : rest
+        );
+      });
     },
     onError: (err, _, context) => {
       if (context?.previous)
         queryClient.setQueryData(["restaurants"], context.previous);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["restaurants"] });
+      // queryClient.invalidateQueries({ queryKey: ["restaurants"] });
     },
   });
 

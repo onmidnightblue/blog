@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { v4 } from "uuid";
@@ -63,12 +63,24 @@ export const useOperatingHoursMutations = (
       });
       return { previous };
     },
+    onSuccess: (updatedHour) => {
+      queryClient.setQueryData<RestaurantType[]>(["restaurants"], (old) => {
+        if (!old) return [];
+        return old.map((rest) => {
+          if (rest.id !== restaurantId) return rest;
+          const updatedHours = rest.operating_hours.map((oh) =>
+            oh.day_of_week === updatedHour.day_of_week ? updatedHour : oh
+          );
+          return { ...rest, operating_hours: updatedHours };
+        });
+      });
+    },
     onError: (err, _, context) => {
       if (context?.previous)
         queryClient.setQueryData(["restaurants"], context.previous);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["restaurants"] });
+      // queryClient.invalidateQueries({ queryKey: ["restaurants"] });
     },
   });
 
