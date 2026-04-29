@@ -44,10 +44,7 @@ const MapDetail = ({ selectedRestaurant, onClose }: Props) => {
             NAVER
           </span>
         </h2>
-        <div
-          onClick={onClose}
-          className="p-2 rounded-full text-foreground-muted"
-        >
+        <div onClick={onClose} className="text-foreground-muted cursor-pointer">
           닫기
         </div>
       </div>

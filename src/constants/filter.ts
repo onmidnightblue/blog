@@ -40,4 +40,4 @@ export const SORT_CYCLE = Object.keys(
   SORT_LABELS
 ) as (keyof typeof SORT_LABELS)[];
 
-export const DAY_LABELS = ["월", "화", "수", "목", "금", "토", "일"];
+export const DAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
