@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { useRestaurantStore } from "@store";
@@ -16,6 +16,7 @@ interface ApiErrorResponse {
 
 export const useRestaurants = (id?: string) => {
   const store = useRestaurantStore();
+  const { setFilter } = store;
 
   const {
     data: restaurants = [],
@@ -30,6 +31,12 @@ export const useRestaurants = (id?: string) => {
     staleTime: 1000 * 60 * 60, // 캐시 갱신
     gcTime: 1000 * 60 * 60 * 24, // 캐시 삭제
   });
+
+  useEffect(() => {
+    if (restaurants && restaurants.length > 0) {
+      setFilter("restaurants", restaurants);
+    }
+  }, [restaurants, setFilter]);
 
   const {
     saveToSupabase,

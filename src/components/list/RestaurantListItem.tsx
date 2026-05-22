@@ -2,14 +2,15 @@ import { useState } from "react";
 import { useRestaurants } from "@hooks";
 import { RestaurantType, SupabaseValue } from "@types";
 import { SmallLoadingSpinner } from "@components/common";
-import EditComponent from "./restaurantListItem/EditComponent";
+import EditComponent from "src/components/list/restaurantListItem/EditComponent";
 import ViewComponent from "./restaurantListItem/ViewComponent";
 
 interface Props {
   restaurant: RestaurantType;
+  isAdmin?: boolean;
 }
 
-const RestaurantListItem = ({ restaurant }: Props) => {
+const RestaurantListItem = ({ isAdmin, restaurant }: Props) => {
   const { id } = restaurant || {};
   const [isEditMode, setIsEditMode] = useState(false);
   const [formData, setFormData] = useState<Record<string, SupabaseValue>>({});
@@ -63,39 +64,41 @@ const RestaurantListItem = ({ restaurant }: Props) => {
           <div className="mt-4 text-xs text-blue-400">ID: {id}</div>
         )}
       </div>
-      <div className={`absolute top-2 right-0 text-right px-1 text-sm`}>
-        {isEditMode ? (
-          <div className="flex gap-4">
-            {isLoading && <SmallLoadingSpinner />}
-            {!isLoading && (
-              <>
-                <button
-                  className="text-error disabled:text-placeholder disabled:cursor-not-allowed"
-                  onClick={resetFormData}
-                  disabled={!hasChanges}
-                >
-                  RESTORE
-                </button>
-                <button
-                  className="text-green-600 disabled:text-placeholder disabled:cursor-not-allowed"
-                  onClick={handleSave}
-                  disabled={!hasChanges}
-                >
-                  SAVE
-                </button>
-                <button
-                  className=" text-blue-400 cursor-pointer"
-                  onClick={() => setIsEditMode(false)}
-                >
-                  CANCEL
-                </button>
-              </>
-            )}
-          </div>
-        ) : (
-          <button onClick={() => setIsEditMode(true)}>EDIT</button>
-        )}
-      </div>
+      {isAdmin && (
+        <div className={`absolute top-2 right-0 text-right px-1 text-sm`}>
+          {isEditMode ? (
+            <div className="flex gap-4">
+              {isLoading && <SmallLoadingSpinner />}
+              {!isLoading && (
+                <>
+                  <button
+                    className="text-error disabled:text-placeholder disabled:cursor-not-allowed"
+                    onClick={resetFormData}
+                    disabled={!hasChanges}
+                  >
+                    RESTORE
+                  </button>
+                  <button
+                    className="text-green-600 disabled:text-placeholder disabled:cursor-not-allowed"
+                    onClick={handleSave}
+                    disabled={!hasChanges}
+                  >
+                    SAVE
+                  </button>
+                  <button
+                    className=" text-blue-400 cursor-pointer"
+                    onClick={() => setIsEditMode(false)}
+                  >
+                    CANCEL
+                  </button>
+                </>
+              )}
+            </div>
+          ) : (
+            <button onClick={() => setIsEditMode(true)}>EDIT</button>
+          )}
+        </div>
+      )}
     </li>
   );
 };

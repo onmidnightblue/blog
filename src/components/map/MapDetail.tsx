@@ -1,12 +1,14 @@
 import { RestaurantType } from "@types";
 import { getOperatingHoursText } from "@utils";
+import { useState } from "react";
 
 interface Props {
-  selectedRestaurant: RestaurantType;
+  selectedRestaurants: RestaurantType[];
   onClose: () => void;
 }
 
-const MapDetail = ({ selectedRestaurant, onClose }: Props) => {
+const MapDetail = ({ selectedRestaurants, onClose }: Props) => {
+  const [activeRestaurantIdx, setActiveRestaurantIdx] = useState(0);
   const {
     name,
     status_number,
@@ -16,7 +18,7 @@ const MapDetail = ({ selectedRestaurant, onClose }: Props) => {
     land_address,
     keyword,
     operating_hours,
-  } = selectedRestaurant || {};
+  } = selectedRestaurants[activeRestaurantIdx] || {};
 
   const getHighlightColor = (isError: boolean) =>
     isError ? "text-error" : "text-foreground";

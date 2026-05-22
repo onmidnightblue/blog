@@ -2,14 +2,14 @@
 
 import AdminHeader from "@admin/AdminHeader";
 import Filter from "@admin/Filter";
-import RestaurantList from "@admin/RestaurantList";
+import List from "src/components/list/List";
 
 const page = ({}) => {
   return (
     <>
       <AdminHeader />
       <Filter />
-      <RestaurantList />
+      <List isAdmin={true} />
     </>
   );
 };

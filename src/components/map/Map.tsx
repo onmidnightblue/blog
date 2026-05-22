@@ -13,7 +13,15 @@ import { Toast } from "@components/common";
 import MapPin from "./MapPin";
 import MapDetail from "./MapDetail";
 import MapClusterMarker from "./MapClusterMarker";
-import MapControls from "./MapControls";
+import { PointFeature } from "supercluster";
+
+interface ClusterProperties {
+  cluster?: boolean;
+  restaurant: RestaurantType;
+  cluster_id?: number;
+  point_count?: number;
+  point_count_abbreviated?: string | number;
+}
 
 const Map = ({}) => {
   const { isLoading, isError, restaurants } = useRestaurants();
@@ -22,15 +30,29 @@ const Map = ({}) => {
   const transformComponentRef = useRef<ReactZoomPanPinchRef>(null);
   const [scale, setScale] = useState(1);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [selectedRestaurant, setSelectedRestaurant] =
-    useState<RestaurantType | null>(null);
+  const [selectedRestaurants, setSelectedRestaurants] = useState<
+    RestaurantType[]
+  >([]);
 
-  const clusters = useMapCluster({ restaurants, scale });
-  const { handleMapClick, handleReset } = useMapActions({
+  const { clusters } = useMapCluster({ restaurants, scale });
+
+  const { handleMapClick } = useMapActions({
     transformComponentRef,
     containerRef,
     setToastMessage,
   });
+  const handleCluster = (
+    event: React.MouseEvent,
+    targetX: number,
+    targetY: number
+  ) => {
+    event.stopPropagation();
+    const clusterRestaurants = restaurants.filter((r) => {
+      return parseFloat(r.map_x) === targetX && parseFloat(r.map_y) === targetY;
+    });
+
+    setSelectedRestaurants(clusterRestaurants);
+  };
 
   if (isLoading) {
     return (
@@ -53,7 +75,7 @@ const Map = ({}) => {
       <TransformWrapper
         initialScale={1}
         minScale={1}
-        maxScale={14}
+        maxScale={10}
         limitToBounds={false}
         smooth={true}
         wheel={{
@@ -65,7 +87,6 @@ const Map = ({}) => {
         onTransform={(ref) => setScale(ref.state.scale)}
         ref={transformComponentRef}
       >
-        <MapControls handleReset={handleReset} />
         <TransformComponent
           wrapperClass="!w-full !h-full flex justify-center items-center"
           contentClass="!h-full"
@@ -86,25 +107,24 @@ const Map = ({}) => {
                   y={y}
                   scale={scale}
                   count={point_count}
+                  onClick={(e) => !e.ctrlKey && handleCluster(e, x, y)}
                 />
               ) : (
                 <MapPin
                   key={c.properties.restaurant.id}
                   restaurant={c.properties.restaurant}
                   scale={scale}
-                  onClick={(e) =>
-                    !e.ctrlKey && setSelectedRestaurant(c.properties.restaurant)
-                  }
+                  onClick={(e) => !e.ctrlKey && handleCluster(e, x, y)}
                 />
               );
             })}
           </div>
         </TransformComponent>
       </TransformWrapper>
-      {selectedRestaurant && (
+      {selectedRestaurants.length > 0 && (
         <MapDetail
-          selectedRestaurant={selectedRestaurant}
-          onClose={() => setSelectedRestaurant(null)}
+          selectedRestaurants={selectedRestaurants}
+          onClose={() => setSelectedRestaurants([])}
         />
       )}
       {toastMessage && (

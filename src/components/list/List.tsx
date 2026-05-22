@@ -4,7 +4,11 @@ import { useRestaurantStore } from "@store";
 import { useRestaurants } from "@hooks";
 import RestaurantListItem from "./RestaurantListItem";
 
-const RestaurantList = ({}) => {
+interface Props {
+  isAdmin?: boolean;
+}
+
+const List = ({ isAdmin }: Props) => {
   const { isLoading, isError, restaurants } = useRestaurants();
   const { visibleCount, loadMore } = useRestaurantStore((state) => state);
   const observerTarget = useRef(null);
@@ -26,7 +30,7 @@ const RestaurantList = ({}) => {
       },
       {
         threshold: 0.1,
-        rootMargin: "100px",
+        rootMargin: "600px",
       }
     );
     if (observerTarget.current) observer.observe(observerTarget.current);
@@ -76,6 +80,7 @@ const RestaurantList = ({}) => {
             <RestaurantListItem
               key={`admin-restaurant-${id}`}
               restaurant={restaurant}
+              isAdmin={isAdmin}
             />
           );
         })}
@@ -92,4 +97,4 @@ const RestaurantList = ({}) => {
   );
 };
 
-export default RestaurantList;
+export default List;

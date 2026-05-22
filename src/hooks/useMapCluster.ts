@@ -8,8 +8,8 @@ type Props = {
 };
 
 const C = {
-  RADIUS: 20,
-  MAX_ZOOM: 20,
+  RADIUS: 80,
+  MAX_ZOOM: 40,
   SCALE_MULTIPLIER: 4.0,
 } as const;
 
@@ -44,5 +44,5 @@ export const useMapCluster = ({ restaurants, scale }: Props) => {
     return clusterData.getClusters([0, 0, 100, 100], zoom);
   }, [clusterData, scale]);
 
-  return clusters;
+  return { clusters };
 };

@@ -58,9 +58,12 @@ export const searchFilter = (
       selectedCategories.length === 0 ||
         selectedCategories.includes(restaurant.category || ""),
       !searchTerm ||
-        [restaurant.name, restaurant.keyword, restaurant.category].some((val) =>
-          val?.toLowerCase().includes(searchTerm.toLowerCase())
-        ),
+        [
+          restaurant.name,
+          restaurant.keyword,
+          restaurant.category,
+          restaurant.land_address,
+        ].some((val) => val?.toLowerCase().includes(searchTerm.toLowerCase())),
       operatingOrder === "all" ||
         (operatingOrder === "with_operating") ===
           restaurant?.operating_hours?.length > 0,

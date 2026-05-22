@@ -21,9 +21,9 @@ const Filter = ({}) => {
   };
 
   return (
-    <div className="flex flex-col gap-8 overflow-hidden">
+    <div className="flex flex-col gap-8 overflow-hidden bg-white p-4 border">
       <div className="flex flex-col gap-2">
-        <p className="text-sm text-foreground-muted">카테고리</p>
+        <p className="text-sm text-foreground-muted">종류</p>
         <div className="flex flex-wrap gap-2">
           {categories?.map((category) => {
             const isActive = selectedCategories.includes(category);
@@ -47,7 +47,7 @@ const Filter = ({}) => {
       </div>
       <div className="flex flex-col gap-2">
         <div className="flex flex-col gap-2">
-          <p className="text-sm text-foreground-muted">기준시간</p>
+          <p className="text-sm text-foreground-muted">오픈</p>
         </div>
         <div className="flex gap-1 overflow-x-auto relative">
           {DAY_LABELS.map((label, idx) => {
@@ -71,7 +71,7 @@ const Filter = ({}) => {
           {targetTimeFilter && (
             <div
               onClick={() => setTargetTimeFilter(null)}
-              className="text-blue-500 absolute right-0 top-1/2 -translate-y-1/2"
+              className="text-blue-500 absolute right-0 top-1/2 -translate-y-1/2 cursor-pointer"
             >
               초기화
             </div>
