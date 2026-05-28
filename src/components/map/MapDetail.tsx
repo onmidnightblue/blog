@@ -1,14 +1,21 @@
 import { RestaurantType } from "@types";
 import { getOperatingHoursText } from "@utils";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import MapDetailList from "./MapDetailList";
 
 interface Props {
   selectedRestaurants: RestaurantType[];
+  activeRestaurantIdx: number;
   onClose: () => void;
+  setActiveRestaurantIdx: (index: number) => void;
 }
 
-const MapDetail = ({ selectedRestaurants, onClose }: Props) => {
-  const [activeRestaurantIdx, setActiveRestaurantIdx] = useState(0);
+const MapDetail = ({
+  selectedRestaurants,
+  activeRestaurantIdx,
+  onClose,
+  setActiveRestaurantIdx,
+}: Props) => {
   const {
     name,
     status_number,
@@ -44,20 +51,23 @@ const MapDetail = ({ selectedRestaurants, onClose }: Props) => {
 
   return (
     <div className="w-[calc(100%-2rem)] absolute bottom-4 left-1/2 -translate-x-1/2 z-100 bg-white rounded-4xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)] p-8 animate-slide-up">
-      <div className="flex items-start justify-between mb-2">
-        <h2 className="text-2xl font-extrabold leading-tight">
-          {name}
-          <span
-            className="text-sm text-green-700 cursor-pointer font-normal ml-2"
-            onClick={() => handleOpenNaverMap(name)}
-          >
-            NAVER
-          </span>
-        </h2>
-        <div onClick={onClose} className="text-foreground-muted cursor-pointer">
-          닫기(ESC)
-        </div>
-      </div>
+      {selectedRestaurants.length > 1 && (
+        <MapDetailList
+          selectedRestaurants={selectedRestaurants}
+          selectedHandler={(index) => {
+            setActiveRestaurantIdx(index);
+          }}
+        />
+      )}
+      <h2 className="text-2xl font-extrabold leading-tight mb-2">
+        {name}
+        <span
+          className="text-sm text-green-700 cursor-pointer font-normal ml-2"
+          onClick={() => handleOpenNaverMap(name)}
+        >
+          NAVER
+        </span>
+      </h2>
       <div className="flex flex-col gap-2">
         {keyword && (
           <div
@@ -121,6 +131,12 @@ const MapDetail = ({ selectedRestaurants, onClose }: Props) => {
               })
             : "운영시간"}
         </div>
+      </div>
+      <div
+        onClick={onClose}
+        className="absolute -top-10 right-0 text-foreground-muted cursor-pointer rounded-full bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.2)] w-[36px] h-[36px] font-bold flex items-center justify-center"
+      >
+        ✕
       </div>
     </div>
   );

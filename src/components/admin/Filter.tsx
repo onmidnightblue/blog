@@ -52,7 +52,7 @@ const Filter = ({}) => {
         <input
           type="text"
           id="admin-search-input"
-          className="w-full h-full p-2 pl-10 transition duration-300 border border-gray-300 focus:outline-none focus:ring-1 focus:border-transparent hover:border-black"
+          className="w-full h-full p-2 pl-10 transition duration-300 border border-gray-300 focus:outline-none focus:ring-1 focus:border-transparent hover:border-foreground"
           placeholder="검색어를 입력하세요."
           onChange={(e) => setFilter("searchTerm", e.target.value)}
         />

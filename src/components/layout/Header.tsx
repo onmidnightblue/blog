@@ -25,7 +25,7 @@ const Header = ({ isListView, toggleView }: Props) => {
     >
       <div className={`flex flex-col p-4 w-[calc(100%-38px)]`}>
         <div className="flex gap-1 sm:w-120">
-          <div className="flex items-center gap-4 p-4 bg-white border border-black pointer-events-auto w-full">
+          <div className="flex items-center gap-4 p-4 bg-white border border-foreground pointer-events-auto w-full">
             <h1 className="text-2xl font-bold text-foreground font-paperozi break-keep">
               국회밥안
             </h1>
@@ -33,7 +33,7 @@ const Header = ({ isListView, toggleView }: Props) => {
           </div>
           <div
             onClick={togglePanelHandler}
-            className={`items-center h-18.5 p-2 bg-white border border-black flex justify-center pointer-events-auto cursor-pointer`}
+            className={`items-center h-18.5 p-2 bg-white border border-foreground flex justify-center pointer-events-auto cursor-pointer`}
           >
             <FilterIcon
               className={`transition duration-300 ${
@@ -56,16 +56,20 @@ const Header = ({ isListView, toggleView }: Props) => {
       </div>
       <div className="fixed right-0 top-0 p-4 w-auto flex flex-col gap-1.5 justify-around z-9999">
         <div
-          className={`${viewIconStyle} ${isListView ? "" : "bg-foreground"}`}
+          className={`${viewIconStyle} ${
+            isListView ? "bg-white" : "bg-foreground"
+          }`}
           onClick={() => toggleView(false)}
         >
-          <MapIcon className={isListView ? "" : "stroke-white"} />
+          <MapIcon className={isListView ? "fill-foreground" : "fill-white"} />
         </div>
         <div
-          className={`${viewIconStyle} ${isListView ? "bg-foreground" : ""}`}
+          className={`${viewIconStyle} ${
+            isListView ? "bg-foreground" : "bg-white"
+          }`}
           onClick={() => toggleView(true)}
         >
-          <ListIcon className={isListView ? "stroke-white" : ""} />
+          <ListIcon className={isListView ? "fill-white" : "fill-foreground"} />
         </div>
       </div>
     </header>
@@ -73,6 +77,6 @@ const Header = ({ isListView, toggleView }: Props) => {
 };
 
 // style
-const viewIconStyle = `border bg-white pointer-events-auto cursor-pointer flex items-center justify-center p-1`;
+const viewIconStyle = `border pointer-events-auto cursor-pointer flex items-center justify-center p-1`;
 
 export default Header;

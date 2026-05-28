@@ -36,7 +36,7 @@ const Filter = ({}) => {
                 className={`px-2 rounded-md transition cursor-pointer
                 ${
                   isActive
-                    ? "bg-black text-white"
+                    ? "bg-foreground text-white"
                     : "bg-gray-100 text-foreground-muted"
                 }
                 `}
@@ -59,7 +59,7 @@ const Filter = ({}) => {
                 className={`px-2 rounded-md transition cursor-pointer
                   ${
                     isActive
-                      ? "bg-black text-white"
+                      ? "bg-foreground text-white"
                       : "bg-gray-100 text-foreground-muted"
                   }
                   `}
@@ -92,7 +92,7 @@ const Filter = ({}) => {
             className={`px-2 rounded-md transition cursor-pointer
                   ${
                     !isRoomRequired
-                      ? "bg-black text-white"
+                      ? "bg-foreground text-white"
                       : "bg-gray-100 text-foreground-muted"
                   }
                   `}
@@ -104,7 +104,7 @@ const Filter = ({}) => {
             className={`px-2 rounded-md transition cursor-pointer
                   ${
                     isRoomRequired
-                      ? "bg-black text-white"
+                      ? "bg-foreground text-white"
                       : "bg-gray-100 text-foreground-muted"
                   }
                   `}

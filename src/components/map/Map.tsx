@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   ReactZoomPanPinchRef,
   TransformComponent,
@@ -13,15 +13,6 @@ import { Toast } from "@components/common";
 import MapPin from "./MapPin";
 import MapDetail from "./MapDetail";
 import MapClusterMarker from "./MapClusterMarker";
-import { PointFeature } from "supercluster";
-
-interface ClusterProperties {
-  cluster?: boolean;
-  restaurant: RestaurantType;
-  cluster_id?: number;
-  point_count?: number;
-  point_count_abbreviated?: string | number;
-}
 
 const Map = ({}) => {
   const { isLoading, isError, restaurants } = useRestaurants();
@@ -33,6 +24,7 @@ const Map = ({}) => {
   const [selectedRestaurants, setSelectedRestaurants] = useState<
     RestaurantType[]
   >([]);
+  const [activeRestaurantIdx, setActiveRestaurantIdx] = useState(0);
 
   const { clusters } = useMapCluster({ restaurants, scale });
 
@@ -41,18 +33,40 @@ const Map = ({}) => {
     containerRef,
     setToastMessage,
   });
+
   const handleCluster = (
     event: React.MouseEvent,
     targetX: number,
     targetY: number
   ) => {
     event.stopPropagation();
-    const clusterRestaurants = restaurants.filter((r) => {
-      return parseFloat(r.map_x) === targetX && parseFloat(r.map_y) === targetY;
+    if (!restaurants || restaurants.length === 0) return;
+
+    const getDistSq = (r: RestaurantType, tx: number, ty: number) => {
+      const dx = parseFloat(r.map_x) - tx;
+      const dy = parseFloat(r.map_y) - ty;
+      return dx * dx + dy * dy;
+    };
+    const closestRestaurant = restaurants.reduce((prev, curr) => {
+      return getDistSq(curr, targetX, targetY) <
+        getDistSq(prev, targetX, targetY)
+        ? curr
+        : prev;
     });
 
+    const exactX = parseFloat(closestRestaurant.map_x);
+    const exactY = parseFloat(closestRestaurant.map_y);
+    const clusterRestaurants = restaurants.filter((r) => {
+      return parseFloat(r.map_x) === exactX && parseFloat(r.map_y) === exactY;
+    });
     setSelectedRestaurants(clusterRestaurants);
+    setActiveRestaurantIdx(0);
   };
+
+  const handleCloseDetail = useCallback(() => {
+    setSelectedRestaurants([]);
+    setActiveRestaurantIdx(0);
+  }, []);
 
   if (isLoading) {
     return (
@@ -65,7 +79,7 @@ const Map = ({}) => {
   if (isError) {
     return (
       <div className="p-8 text-center">
-        <p className="text-error">Someting Wrong!</p>
+        <p className="text-error">Something Wrong!</p>
       </div>
     );
   }
@@ -124,7 +138,9 @@ const Map = ({}) => {
       {selectedRestaurants.length > 0 && (
         <MapDetail
           selectedRestaurants={selectedRestaurants}
-          onClose={() => setSelectedRestaurants([])}
+          onClose={handleCloseDetail}
+          activeRestaurantIdx={activeRestaurantIdx}
+          setActiveRestaurantIdx={setActiveRestaurantIdx}
         />
       )}
       {toastMessage && (

@@ -45,7 +45,7 @@ const Search = () => {
         type="text"
         id="search-input"
         value={inputValue}
-        className="bg-white w-full h-full p-2 pl-8 transition duration-300 border border-gray-300 outline-none hover:border-black"
+        className="bg-white w-full h-full p-2 pl-8 transition duration-300 border border-gray-300 outline-none hover:border-foreground"
         placeholder=""
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
