@@ -51,6 +51,7 @@ export const searchFilter = (
     visibleOrder = "all",
     targetTimeFilter = null,
     sortOrder = "address_asc",
+    isRoomRequired = false,
   } = filters || {};
 
   const filtered = restaurants.filter((restaurant) => {
@@ -74,6 +75,7 @@ export const searchFilter = (
             timeFilter(oh, targetTimeFilter)
           ) ?? false
         : true,
+      !isRoomRequired || restaurant.has_room === "TRUE",
     ];
 
     return conditions.every(Boolean);

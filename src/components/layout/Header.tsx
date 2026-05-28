@@ -18,9 +18,13 @@ const Header = ({ isListView, toggleView }: Props) => {
   };
 
   return (
-    <>
-      <header className="fixed flex flex-col top-0 left-1/2 -translate-x-1/2 z-9999 p-4 pointer-events-none w-full sm:w-4/5 sm:max-w-150">
-        <div className="flex gap-1">
+    <header
+      className={`${
+        isListView ? "" : "fixed top-0 left-0"
+      } flex justify-between z-9999 pointer-events-none`}
+    >
+      <div className={`flex flex-col p-4 w-[calc(100%-38px)]`}>
+        <div className="flex gap-1 sm:w-120">
           <div className="flex items-center gap-4 p-4 bg-white border border-black pointer-events-auto w-full">
             <h1 className="text-2xl font-bold text-foreground font-paperozi break-keep">
               국회밥안
@@ -39,16 +43,18 @@ const Header = ({ isListView, toggleView }: Props) => {
           </div>
         </div>
         <div
-          className={`transition-all duration-500 ease-in-out z-9999 ${
+          className={`grid transition-all duration-500 ease-in-out z-9999 sm:w-120 overflow-hidden ${
             isOpenPanel
-              ? "grid-rows-[1fr] opacity-100 mt-1 pointer-events-auto"
-              : "grid-rows-[0fr] opacity-0 mt-0"
+              ? "grid-rows-[1fr] opacity-100 pointer-events-auto mt-1"
+              : "grid-rows-[0fr] opacity-0"
           }`}
         >
-          <Filter />
+          <div className="overflow-hidden">
+            <Filter />
+          </div>
         </div>
-      </header>
-      <div className="fixed right-0 top-0 p-4 w-auto flex flex-col gap-1 justify-around z-9999">
+      </div>
+      <div className="fixed right-0 top-0 p-4 w-auto flex flex-col gap-1.5 justify-around z-9999">
         <div
           className={`${viewIconStyle} ${isListView ? "" : "bg-foreground"}`}
           onClick={() => toggleView(false)}
@@ -62,7 +68,7 @@ const Header = ({ isListView, toggleView }: Props) => {
           <ListIcon className={isListView ? "stroke-white" : ""} />
         </div>
       </div>
-    </>
+    </header>
   );
 };
 

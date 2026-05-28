@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { createPortal } from "react-dom";
 
 interface Props {
@@ -9,6 +9,16 @@ interface Props {
 }
 
 const Modal = ({ title, children, isOpen, closeModal }: Props) => {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeModal();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [closeModal]);
+
   if (typeof document === "undefined") return null;
 
   return createPortal(

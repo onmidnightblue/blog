@@ -13,11 +13,7 @@ const Page = () => {
   };
 
   return (
-    <div
-      className={`flex flex-col w-full ${
-        isListView ? "" : "overflow-hidden h-dvh"
-      }`}
-    >
+    <div className={`w-full ${isListView ? "" : "overflow-hidden h-dvh"}`}>
       <Header isListView={isListView} toggleView={toggleView} />
       {isListView ? <List /> : <Map />}
     </div>

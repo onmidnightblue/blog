@@ -8,6 +8,8 @@ const Filter = ({}) => {
     toggleCategory,
     targetTimeFilter,
     setTargetTimeFilter,
+    isRoomRequired,
+    setFilter,
   } = useRestaurantStore((state) => state);
 
   const handleDayChange = (day: number) => {
@@ -46,9 +48,7 @@ const Filter = ({}) => {
         </div>
       </div>
       <div className="flex flex-col gap-2">
-        <div className="flex flex-col gap-2">
-          <p className="text-sm text-foreground-muted">오픈</p>
-        </div>
+        <p className="text-sm text-foreground-muted">방문시간</p>
         <div className="flex gap-1 overflow-x-auto relative">
           {DAY_LABELS.map((label, idx) => {
             const isActive = targetTimeFilter?.day === idx;
@@ -83,6 +83,35 @@ const Filter = ({}) => {
           onChange={(e) => handleTimeChange(e.target.value)}
           className="w-full p-2 text-sm border rounded-md outline-none focus:ring-2 focus:ring-blue-500/20"
         />
+      </div>
+      <div className="flex flex-col gap-2">
+        <p className="text-sm text-foreground-muted">룸</p>
+        <div className="flex flex-wrap gap-2">
+          <div
+            onClick={() => setFilter("isRoomRequired", false)}
+            className={`px-2 rounded-md transition cursor-pointer
+                  ${
+                    !isRoomRequired
+                      ? "bg-black text-white"
+                      : "bg-gray-100 text-foreground-muted"
+                  }
+                  `}
+          >
+            전체
+          </div>
+          <div
+            onClick={() => setFilter("isRoomRequired", true)}
+            className={`px-2 rounded-md transition cursor-pointer
+                  ${
+                    isRoomRequired
+                      ? "bg-black text-white"
+                      : "bg-gray-100 text-foreground-muted"
+                  }
+                  `}
+          >
+            보유
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -25,6 +25,7 @@ export interface RestaurantStoreState {
   visibleOrder: VisibleFilterType;
   targetTimeFilter: TimeType | null;
   visibleCount: number;
+  isRoomRequired: boolean;
 }
 
 interface RestaurantStoreActions {
@@ -56,6 +57,7 @@ export const useRestaurantStore = create<
   visibleOrder: VISIBLE_CYCLE[0],
   targetTimeFilter: null,
   visibleCount: 20,
+  isRoomRequired: false,
 
   // actions
   setFilter: (key, value) =>
@@ -67,7 +69,14 @@ export const useRestaurantStore = create<
       if (key === "restaurants" && Array.isArray(value)) {
         const restaurants = value as RestaurantType[];
         const uniqueCategories = Array.from(
-          new Set(restaurants.map((r) => r.category).filter(Boolean))
+          new Set(
+            restaurants
+              .filter(
+                (r) => r.is_visible === "TRUE" && r.status_number === "01"
+              )
+              .map((r) => r.category)
+              .filter(Boolean)
+          )
         ).sort();
         newState.categories = uniqueCategories;
       }
@@ -93,6 +102,7 @@ export const useRestaurantStore = create<
       sortOrder: SORT_CYCLE[0],
       operatingOrder: OPERATING_CYCLE[0],
       visibleCount: 20,
+      isRoomRequired: false,
     }),
   toggleCategory: (category) =>
     set((state) => {

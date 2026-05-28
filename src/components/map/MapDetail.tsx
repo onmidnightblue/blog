@@ -1,6 +1,6 @@
 import { RestaurantType } from "@types";
 import { getOperatingHoursText } from "@utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
   selectedRestaurants: RestaurantType[];
@@ -32,6 +32,16 @@ const MapDetail = ({ selectedRestaurants, onClose }: Props) => {
     ? getOperatingHoursText(operating_hours).split(" / ")
     : [];
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
+
   return (
     <div className="w-[calc(100%-2rem)] absolute bottom-4 left-1/2 -translate-x-1/2 z-100 bg-white rounded-4xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)] p-8 animate-slide-up">
       <div className="flex items-start justify-between mb-2">
@@ -45,7 +55,7 @@ const MapDetail = ({ selectedRestaurants, onClose }: Props) => {
           </span>
         </h2>
         <div onClick={onClose} className="text-foreground-muted cursor-pointer">
-          닫기
+          닫기(ESC)
         </div>
       </div>
       <div className="flex flex-col gap-2">
