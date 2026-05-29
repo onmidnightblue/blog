@@ -64,8 +64,10 @@ export const useRestaurantStore = create<
     set(() => {
       const newState: Partial<RestaurantStoreState> = {
         [key]: value,
-        visibleCount: 20,
       };
+      if (key !== "restaurants") {
+        newState.visibleCount = 20;
+      }
       if (key === "restaurants" && Array.isArray(value)) {
         const restaurants = value as RestaurantType[];
         const uniqueCategories = Array.from(

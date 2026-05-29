@@ -30,7 +30,7 @@ const List = ({ isAdmin }: Props) => {
       },
       {
         threshold: 0,
-        rootMargin: "50px",
+        rootMargin: "0px",
       }
     );
     if (observerTarget.current) observer.observe(observerTarget.current);
