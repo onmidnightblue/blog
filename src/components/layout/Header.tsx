@@ -36,14 +36,12 @@ const Header = ({ isListView, toggleView }: Props) => {
             className={`items-center h-18.5 p-2 bg-white border border-foreground flex justify-center pointer-events-auto cursor-pointer`}
           >
             <FilterIcon
-              className={`transition duration-300 ${
-                isOpenPanel ? "fill-blue-500" : ""
-              }`}
+              className={`transition ${isOpenPanel ? "fill-blue-500" : ""}`}
             />
           </div>
         </div>
         <div
-          className={`grid transition-all duration-500 ease-in-out z-9999 sm:w-120 overflow-hidden ${
+          className={`grid transition-all ease-in-out z-9999 sm:w-120 overflow-hidden ${
             isOpenPanel
               ? "grid-rows-[1fr] opacity-100 pointer-events-auto mt-1"
               : "grid-rows-[0fr] opacity-0"

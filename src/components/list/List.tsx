@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { RestaurantType } from "@types";
 import { useRestaurantStore } from "@store";
 import { useRestaurants } from "@hooks";
-import RestaurantListItem from "./RestaurantListItem";
+import ListItem from "./ListItem";
 
 interface Props {
   isAdmin?: boolean;
@@ -77,7 +77,7 @@ const List = ({ isAdmin }: Props) => {
         {displayItems?.map((restaurant: RestaurantType) => {
           const { id } = restaurant || {};
           return (
-            <RestaurantListItem
+            <ListItem
               key={`admin-restaurant-${id}`}
               restaurant={restaurant}
               isAdmin={isAdmin}

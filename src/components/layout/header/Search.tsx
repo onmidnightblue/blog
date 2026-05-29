@@ -30,12 +30,12 @@ const Search = () => {
       </label>
       {!inputValue && (
         <div
-          className={`absolute left-9 top-0 h-full w-[calc(100%-36px)] pointer-events-none transition-all duration-300
+          className={`absolute left-9 top-0 h-full w-[calc(100%-36px)] pointer-events-none transition-all 
      ${isFocused ? "opacity-0 -translate-y-2" : "opacity-100"}`}
         >
           <div
             key={suggestionIdx}
-            className={`absolute inset-0 flex items-center text-gray-300 transition duration-300`}
+            className={`absolute inset-0 flex items-center text-gray-300 transition`}
           >
             {KEYWORD_SUGGESTIONS[suggestionIdx]}
           </div>
@@ -45,7 +45,7 @@ const Search = () => {
         type="text"
         id="search-input"
         value={inputValue}
-        className="bg-white w-full h-full p-2 pl-8 transition duration-300 border border-gray-300 outline-none hover:border-foreground"
+        className="bg-white w-full h-full p-2 pl-8 transition border border-gray-300 outline-none hover:border-foreground"
         placeholder=""
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}

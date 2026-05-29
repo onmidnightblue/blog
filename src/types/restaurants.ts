@@ -83,7 +83,7 @@ export interface RestaurantType {
   HOMEPAGE: string; // 홈페이지
 }
 
-export interface RestaurantListItemType {
+export interface ListItemType {
   key?: string | undefined;
   data: string | string[] | null;
   label: string;

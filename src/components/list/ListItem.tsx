@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { useRestaurants } from "@hooks";
-import { RestaurantType, SupabaseValue } from "@types";
+import { OperatingHourType, RestaurantType, SupabaseValue } from "@types";
 import { SmallLoadingSpinner } from "@components/common";
-import EditComponent from "src/components/list/restaurantListItem/EditComponent";
-import ViewComponent from "./restaurantListItem/ViewComponent";
+import EditComponent from "src/components/list/listItem/EditComponent";
+import ViewComponent from "./listItem/ViewComponent";
 
 interface Props {
   restaurant: RestaurantType;
   isAdmin?: boolean;
 }
 
-const RestaurantListItem = ({ isAdmin, restaurant }: Props) => {
+const ListItem = ({ isAdmin, restaurant }: Props) => {
   const { id } = restaurant || {};
   const [isEditMode, setIsEditMode] = useState(false);
   const [formData, setFormData] = useState<Record<string, SupabaseValue>>({});
@@ -37,9 +37,25 @@ const RestaurantListItem = ({ isAdmin, restaurant }: Props) => {
   const hasChanges = Object.keys(formData).length > 0;
 
   const handleSave = async () => {
-    await saveToSupabase(formData);
-    resetFormData();
-    setIsEditMode(false);
+    try {
+      const basicInfoData = { ...formData };
+      delete basicInfoData.operating_hours;
+
+      if (Object.keys(basicInfoData).length > 0) {
+        await saveToSupabase(basicInfoData);
+      }
+
+      if (formData.operating_hours) {
+        await saveOperatingHours(
+          formData.operating_hours as unknown as OperatingHourType[]
+        );
+      }
+
+      resetFormData();
+      setIsEditMode(false);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
@@ -55,7 +71,6 @@ const RestaurantListItem = ({ isAdmin, restaurant }: Props) => {
             fieldKey={fieldKey}
             errorMessage={errorMessage}
             updateFormData={updateFormData}
-            saveOperatingHours={saveOperatingHours}
           />
         ) : (
           <ViewComponent restaurant={restaurant} />
@@ -87,7 +102,10 @@ const RestaurantListItem = ({ isAdmin, restaurant }: Props) => {
                   </button>
                   <button
                     className=" text-blue-400 cursor-pointer"
-                    onClick={() => setIsEditMode(false)}
+                    onClick={() => {
+                      resetFormData();
+                      setIsEditMode(false);
+                    }}
                   >
                     CANCEL
                   </button>
@@ -103,4 +121,4 @@ const RestaurantListItem = ({ isAdmin, restaurant }: Props) => {
   );
 };
 
-export default RestaurantListItem;
+export default ListItem;

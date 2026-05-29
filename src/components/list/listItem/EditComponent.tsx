@@ -1,4 +1,4 @@
-import { OperatingHourType, RestaurantType, SupabaseValue } from "@types";
+import { RestaurantType, SupabaseValue } from "@types";
 import EditOperatingHour from "./EditOperatingHour";
 import EditBasicInfo from "./EditBasicInfo";
 
@@ -8,11 +8,6 @@ interface Props {
   errorId: string | number | null | undefined;
   fieldKey?: string | null;
   updateFormData: (updateData: Record<string, SupabaseValue>) => void;
-  saveOperatingHours: (payload: {
-    id: string | number;
-    dayOfWeek: number;
-    data: Partial<OperatingHourType>;
-  }) => void;
 }
 
 const EditComponent = ({
@@ -21,7 +16,6 @@ const EditComponent = ({
   fieldKey,
   errorMessage,
   updateFormData,
-  saveOperatingHours,
 }: Props) => {
   const handlePaste = async (e: React.ClipboardEvent) => {
     const pasteData = e.clipboardData.getData("text");
@@ -49,7 +43,7 @@ const EditComponent = ({
         errorId={errorId}
         fieldKey={fieldKey}
         errorMessage={errorMessage}
-        saveOperatingHours={saveOperatingHours}
+        updateFormData={updateFormData}
       />
     </div>
   );

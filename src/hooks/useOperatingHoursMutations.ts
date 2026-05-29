@@ -1,14 +1,15 @@
-import { useMemo } from "react";
+import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { v4 } from "uuid";
-import debounce from "lodash.debounce";
-import { OperatingHourType, RestaurantType } from "@types";
+import { OperatingHourType } from "@types";
+import { DAY_LABELS } from "@constants";
 
 export const useOperatingHoursMutations = (
   restaurantId: string | null | undefined
 ) => {
   const queryClient = useQueryClient();
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const mutation = useMutation({
     mutationFn: async ({
@@ -30,78 +31,39 @@ export const useOperatingHoursMutations = (
       });
       return response;
     },
-    onMutate: async (variables) => {
-      await queryClient.cancelQueries({ queryKey: ["restaurants"] });
-      const previous = queryClient.getQueryData<RestaurantType[]>([
-        "restaurants",
-      ]);
-      queryClient.setQueryData<RestaurantType[]>(["restaurants"], (old) => {
-        if (!old) return [];
-        return old.map((rest) => {
-          if (rest.id !== restaurantId) return rest;
-          const isExisting = rest.operating_hours.some(
-            (oh) => oh.day_of_week === variables.dayOfWeek
-          );
-          let updatedHours;
-          if (isExisting) {
-            updatedHours = rest.operating_hours.map((oh) =>
-              oh.day_of_week === variables.dayOfWeek
-                ? { ...oh, ...variables.data }
-                : oh
-            );
-          } else {
-            const newHour = {
-              id: variables.id,
-              day_of_week: variables.dayOfWeek,
-              is_off: false,
-              ...variables.data,
-            } as OperatingHourType;
-            updatedHours = [...rest.operating_hours, newHour];
-          }
-          return { ...rest, operating_hours: updatedHours };
-        });
-      });
-      return { previous };
-    },
-    onSuccess: (updatedHour) => {
-      queryClient.setQueryData<RestaurantType[]>(["restaurants"], (old) => {
-        if (!old) return [];
-        return old.map((rest) => {
-          if (rest.id !== restaurantId) return rest;
-          const updatedHours = rest.operating_hours.map((oh) =>
-            oh.day_of_week === updatedHour.day_of_week ? updatedHour : oh
-          );
-          return { ...rest, operating_hours: updatedHours };
-        });
-      });
-    },
-    onError: (err, _, context) => {
-      if (context?.previous)
-        queryClient.setQueryData(["restaurants"], context.previous);
-    },
-    onSettled: () => {
-      // queryClient.invalidateQueries({ queryKey: ["restaurants"] });
-    },
   });
 
-  const saveOperatingHours = useMemo(
-    () =>
-      debounce(
-        (payload: {
-          id: number | string;
-          dayOfWeek: number;
-          data: Partial<OperatingHourType>;
-        }) => {
-          mutation.mutate(payload);
-        },
-        300
-      ),
-    [mutation]
-  );
+  const saveOperatingHours = async (operatingHours: OperatingHourType[]) => {
+    setIsUpdating(true);
+    try {
+      const promises = operatingHours.map((oh) =>
+        mutation.mutateAsync({
+          id: oh.id,
+          dayOfWeek: oh.day_of_week,
+          data: oh,
+        })
+      );
+      const results = await Promise.allSettled(promises);
+      await queryClient.invalidateQueries({ queryKey: ["restaurants"] });
+      const failedDays = results
+        .map((res, index) =>
+          res.status === "rejected" ? operatingHours[index].day_of_week : null
+        )
+        .filter((day) => day !== null);
+      if (failedDays.length > 0) {
+        const failedDayNames = failedDays
+          .map((day) => DAY_LABELS[day as number])
+          .join(", ");
+        throw new Error(`Error: Failed to save ${failedDayNames}요일`);
+      }
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return {
     saveOperatingHours,
-    isUpdating: mutation.isPending,
+    isUpdating,
     error: mutation.error,
     variables: mutation.variables,
   };

@@ -25,6 +25,16 @@ const Map = ({}) => {
     RestaurantType[]
   >([]);
   const [activeRestaurantIdx, setActiveRestaurantIdx] = useState(0);
+  const activeX =
+    selectedRestaurants.length > 0
+      ? parseFloat(selectedRestaurants[0].map_x)
+      : null;
+  const activeY =
+    selectedRestaurants.length > 0
+      ? parseFloat(selectedRestaurants[0].map_y)
+      : null;
+
+  console.log(activeX, activeY);
 
   const { clusters } = useMapCluster({ restaurants, scale });
 
@@ -114,6 +124,11 @@ const Map = ({}) => {
             {clusters.map((c) => {
               const [x, y] = c.geometry.coordinates;
               const { cluster, point_count } = c.properties;
+              const isActive =
+                activeX !== null &&
+                activeY !== null &&
+                Math.abs(x - activeX) < 0.001 &&
+                Math.abs(y - activeY) < 0.001;
               return cluster ? (
                 <MapClusterMarker
                   key={`cluster-${c.id}`}
@@ -121,6 +136,7 @@ const Map = ({}) => {
                   y={y}
                   scale={scale}
                   count={point_count}
+                  isActive={isActive}
                   onClick={(e) => !e.ctrlKey && handleCluster(e, x, y)}
                 />
               ) : (
@@ -128,6 +144,7 @@ const Map = ({}) => {
                   key={c.properties.restaurant.id}
                   restaurant={c.properties.restaurant}
                   scale={scale}
+                  isActive={isActive}
                   onClick={(e) => !e.ctrlKey && handleCluster(e, x, y)}
                 />
               );

@@ -52,7 +52,7 @@ const Filter = ({}) => {
         <input
           type="text"
           id="admin-search-input"
-          className="w-full h-full p-2 pl-10 transition duration-300 border border-gray-300 focus:outline-none focus:ring-1 focus:border-transparent hover:border-foreground"
+          className="w-full h-full p-2 pl-10 transition border border-gray-300 focus:outline-none focus:ring-1 focus:border-transparent hover:border-foreground"
           placeholder="검색어를 입력하세요."
           onChange={(e) => setFilter("searchTerm", e.target.value)}
         />
@@ -62,7 +62,7 @@ const Filter = ({}) => {
         return (
           <div
             key={index}
-            className="text-center transition duration-300 cursor-pointer select-none text-foreground hover:text-blue-400 "
+            className="text-center transition cursor-pointer select-none text-foreground hover:text-blue-400 "
             onClick={() => cycleFilter(key, cycle)}
           >
             {label}

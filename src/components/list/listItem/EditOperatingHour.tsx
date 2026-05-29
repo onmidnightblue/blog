@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { DAY_LABELS, TIME_FIELDS, TIME_REGEX } from "@constants";
-import { OperatingHourType, RestaurantType } from "@types";
+import { OperatingHourType, RestaurantType, SupabaseValue } from "@types";
 import { InnerInput } from "@components/common";
 
 interface Props {
@@ -8,11 +8,7 @@ interface Props {
   errorId: string | number | null | undefined;
   errorMessage: string | null;
   fieldKey?: string | null;
-  saveOperatingHours: (payload: {
-    id: string | number;
-    dayOfWeek: number;
-    data: Partial<OperatingHourType>;
-  }) => void;
+  updateFormData: (updateData: Record<string, SupabaseValue>) => void;
 }
 
 const EditOperatingHour = ({
@@ -20,7 +16,7 @@ const EditOperatingHour = ({
   errorId,
   fieldKey,
   errorMessage,
-  saveOperatingHours,
+  updateFormData,
 }: Props) => {
   const { operating_hours } = restaurant || {};
   const displayHours = useMemo(() => {
@@ -36,6 +32,18 @@ const EditOperatingHour = ({
     if (day === 5) return "text-blue-500";
     if (day === 6) return "text-red-500";
     return "text-gray-600";
+  };
+
+  const handleHourChange = (
+    dayOfWeek: number,
+    data: Partial<OperatingHourType>
+  ) => {
+    const updatedHours = displayHours.map((oh) =>
+      oh.day_of_week === dayOfWeek ? { ...oh, ...data } : oh
+    );
+    updateFormData({
+      operating_hours: updatedHours as unknown as SupabaseValue,
+    });
   };
 
   return (
@@ -74,11 +82,7 @@ const EditOperatingHour = ({
                       placeholder={field.placeholder}
                       error={isErrorField ? errorMessage : ""}
                       onChange={(value) =>
-                        saveOperatingHours({
-                          id: oh.id,
-                          dayOfWeek: oh.day_of_week,
-                          data: { [field.key]: value },
-                        })
+                        handleHourChange(oh.day_of_week, { [field.key]: value })
                       }
                     />
                   </div>
@@ -89,11 +93,7 @@ const EditOperatingHour = ({
           <div className="flex gap-2 items-center text-blue-400">
             <div
               onClick={() =>
-                saveOperatingHours({
-                  id: oh.id,
-                  dayOfWeek: oh.day_of_week,
-                  data: { is_off: !oh.is_off },
-                })
+                handleHourChange(oh.day_of_week, { is_off: !oh.is_off })
               }
               className={`text-sm cursor-pointer 
                     ${oh.is_off ? "text-error" : ""}
@@ -104,17 +104,13 @@ const EditOperatingHour = ({
             {index > 0 && !oh.is_off && (
               <div
                 onClick={() =>
-                  saveOperatingHours({
-                    id: oh.id,
-                    dayOfWeek: oh.day_of_week,
-                    data: {
-                      open_time: displayHours[index - 1].open_time,
-                      close_time: displayHours[index - 1].close_time,
-                      break_start: displayHours[index - 1].break_start,
-                      break_end: displayHours[index - 1].break_end,
-                      last_order: displayHours[index - 1].last_order,
-                      is_off: displayHours[index - 1].is_off,
-                    },
+                  handleHourChange(oh.day_of_week, {
+                    open_time: displayHours[index - 1].open_time,
+                    close_time: displayHours[index - 1].close_time,
+                    break_start: displayHours[index - 1].break_start,
+                    break_end: displayHours[index - 1].break_end,
+                    last_order: displayHours[index - 1].last_order,
+                    is_off: displayHours[index - 1].is_off,
                   })
                 }
                 className="text-sm cursor-pointer"

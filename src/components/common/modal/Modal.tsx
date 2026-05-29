@@ -23,7 +23,7 @@ const Modal = ({ title, children, isOpen, closeModal }: Props) => {
 
   return createPortal(
     <div
-      className={`fixed inset-0 flex items-center justify-center p-4 z-100 transition-all duration-300 ease-in-out ${
+      className={`fixed inset-0 flex items-center justify-center p-4 z-100 transition-all ease-in-out ${
         isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
     >

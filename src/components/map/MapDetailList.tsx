@@ -89,7 +89,7 @@ const MapDetailList = ({ selectedRestaurants, selectedHandler }: Props) => {
   }, [selectedRestaurants]);
 
   return (
-    <div className="flex flex-col gap-1 mb-8 w-full">
+    <div className="flex flex-col gap-1 mt-8 w-full">
       <div className="text-md mb-1 flex gap-1">
         <FlagIcon />
         {buildingName} 내 식당 {selectedRestaurants.length}곳
@@ -151,7 +151,7 @@ const MapDetailList = ({ selectedRestaurants, selectedHandler }: Props) => {
 const ArrowStyle =
   "flex items-center justify-center w-[24px] h-[24px] rounded-full border";
 const ActiveArrowStyle =
-  "cursor-pointer hover:bg-foreground hover:text-white transition duration-300 border-foreground-muted bg-white";
+  "cursor-pointer hover:bg-foreground hover:text-white transition border-foreground-muted bg-white";
 const DisabledArrowStyle = "border-gray-300 text-gray-400 bg-gray-100";
 
 export default MapDetailList;

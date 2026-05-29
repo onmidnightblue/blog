@@ -51,14 +51,6 @@ const MapDetail = ({
 
   return (
     <div className="w-[calc(100%-2rem)] absolute bottom-4 left-1/2 -translate-x-1/2 z-100 bg-white rounded-4xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)] p-8 animate-slide-up">
-      {selectedRestaurants.length > 1 && (
-        <MapDetailList
-          selectedRestaurants={selectedRestaurants}
-          selectedHandler={(index) => {
-            setActiveRestaurantIdx(index);
-          }}
-        />
-      )}
       <h2 className="text-2xl font-extrabold leading-tight mb-2">
         {name}
         <span
@@ -131,6 +123,14 @@ const MapDetail = ({
               })
             : "운영시간"}
         </div>
+        {selectedRestaurants.length > 1 && (
+          <MapDetailList
+            selectedRestaurants={selectedRestaurants}
+            selectedHandler={(index) => {
+              setActiveRestaurantIdx(index);
+            }}
+          />
+        )}
       </div>
       <div
         onClick={onClose}
