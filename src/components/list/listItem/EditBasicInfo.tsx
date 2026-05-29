@@ -1,4 +1,5 @@
 import { InnerInput, Select } from "@components/common";
+import { useExternalMap } from "@hooks";
 import { RestaurantType, SupabaseValue } from "@types";
 
 interface Props {
@@ -14,22 +15,23 @@ const EditBasicInfo = ({
   errorMessage,
   updateFormData,
 }: Props) => {
-  const handleOpenNaverMap = (name: string) => {
-    const query = encodeURIComponent(`여의도 ${name}`);
-    window.open(`https://map.naver.com/v5/search/${query}`, "_blank");
-  };
+  const { openNaverMap, openKakaoMap } = useExternalMap();
 
   const STATUS_OPTIONS: [string, string][] = [
     ["01", "운영"],
     ["03", "폐업"],
   ];
   const VISIBLE_OPTIONS: [string, string][] = [
-    ["TRUE", "표시함"],
-    ["FALSE", "표시안함"],
+    ["true", "표시함"],
+    ["false", "표시안함"],
   ];
   const ROOM_OPTIONS: [string, string][] = [
-    ["TRUE", "룸보유"],
-    ["FALSE", "룸없음"],
+    ["true", "룸보유"],
+    ["false", "룸없음"],
+  ];
+  const COURSE_OPTIONS: [string, string][] = [
+    ["true", "코스있음"],
+    ["false", "일반"],
   ];
 
   return (
@@ -42,16 +44,22 @@ const EditBasicInfo = ({
             onChange={(v) => updateFormData({ name: v })}
             error={errorId === "name" ? errorMessage : null}
           />
-          <div>
-            <span
+          <div className="flex gap-2">
+            <button
               className="text-xs text-green-700 cursor-pointer"
-              onClick={() => handleOpenNaverMap(restaurant.name)}
+              onClick={() => openNaverMap(restaurant.name)}
             >
               NAVER
-            </span>
+            </button>
+            <button
+              className="text-xs text-yellow-500 cursor-pointer"
+              onClick={() => openKakaoMap(restaurant.name)}
+            >
+              KAKAO
+            </button>
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-4 gap-2">
           <Select
             options={STATUS_OPTIONS}
             value={restaurant.status_number}
@@ -61,14 +69,20 @@ const EditBasicInfo = ({
           <Select
             options={VISIBLE_OPTIONS}
             value={String(restaurant.is_visible)}
-            onChange={(v) => updateFormData({ is_visible: v })}
+            onChange={(v) => updateFormData({ is_visible: v === "true" })}
             error={errorId === "is_visible" ? errorMessage : null}
           />
           <Select
             options={ROOM_OPTIONS}
             value={String(restaurant.has_room)}
-            onChange={(v) => updateFormData({ has_room: v })}
+            onChange={(v) => updateFormData({ has_room: v === "true" })}
             error={errorId === "has_room" ? errorMessage : null}
+          />
+          <Select
+            options={COURSE_OPTIONS}
+            value={String(restaurant.has_course)}
+            onChange={(v) => updateFormData({ has_course: v === "true" })}
+            error={errorId === "has_course" ? errorMessage : null}
           />
         </div>
         <div className="grid grid-cols-2 gap-2">

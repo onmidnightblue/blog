@@ -1,7 +1,9 @@
 import { RestaurantType } from "@types";
-import { getOperatingHoursText } from "@utils";
-import { useEffect } from "react";
-import MapDetailList from "./MapDetailList";
+import { useCallback, useEffect, useState } from "react";
+import MapDetailList from "./mapDetail/MapDetailList";
+import MapDetailInfo from "./mapDetail/MapDetailInfo";
+import Comment from "../comment/Comment";
+import { useComments, useExternalMap } from "@hooks";
 
 interface Props {
   selectedRestaurants: RestaurantType[];
@@ -16,135 +18,103 @@ const MapDetail = ({
   onClose,
   setActiveRestaurantIdx,
 }: Props) => {
-  const {
-    name,
-    status_number,
-    has_room,
-    category,
-    phone,
-    land_address,
-    keyword,
-    operating_hours,
-  } = selectedRestaurants[activeRestaurantIdx] || {};
+  const restaurant = selectedRestaurants[activeRestaurantIdx];
+  const { id: restaurantId, name, keyword } = restaurant || {};
+  const { data: comments = [] } = useComments(restaurantId, true);
+  const [isVisible, setIsVisible] = useState(false);
+  const { openNaverMap, openKakaoMap } = useExternalMap();
 
-  const getHighlightColor = (isError: boolean) =>
-    isError ? "text-error" : "text-foreground";
+  const handleCloseAnimation = useCallback(() => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onClose();
+    }, 300);
+  }, [onClose]);
 
-  const handleOpenNaverMap = (name: string) => {
-    const query = encodeURIComponent(`여의도 ${name}`);
-    window.open(`https://map.naver.com/v5/search/${query}`, "_blank");
-  };
-
-  const OperatingArray = operating_hours
-    ? getOperatingHoursText(operating_hours).split(" / ")
-    : [];
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 10);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") handleCloseAnimation();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [onClose]);
+  }, [handleCloseAnimation]);
 
   return (
-    <div className="w-[calc(100%-2rem)] absolute bottom-4 left-1/2 -translate-x-1/2 z-100 bg-white rounded-4xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)] p-8 animate-slide-up">
-      <h2 className="text-2xl font-extrabold leading-tight mb-2">
-        {name}
-        <span
-          className="text-sm text-green-700 cursor-pointer font-normal ml-2"
-          onClick={() => handleOpenNaverMap(name)}
-        >
-          NAVER
-        </span>
-      </h2>
-      <div className="flex flex-col gap-2">
-        {keyword && (
-          <div
-            className={`${
-              keyword ? "text-foreground" : "text-placeholder"
-            } flex flex-wrap gap-1`}
-          >
-            {keyword.split(" ").map((word, index) => (
-              <span
-                key={`map-detail-keyword-${index}`}
-                className="text-sm bg-gray-100 px-1 rounded"
-              >
-                {word}
-              </span>
-            ))}
+    <div
+      className={`absolute bottom-2 sm:bottom-4 left-2 sm:left-4 z-100 flex flex-col gap-2 transition-all ease-in-out max-h-[calc(100%-94px)] sm:max-h-[calc(100%-162px)] sm:w-[calc(100%-2rem)] w-[calc(100%-1rem)] pointer-events-none ${
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+      }`}
+    >
+      <div className="bg-white border p-6 flex flex-col gap-4 overflow-hidden w-full sm:w-120 pointer-events-auto">
+        <div className="flex gap-2 justify-between items-start relative">
+          <div>
+            <h2 className="text-lg sm:text-2xl font-extrabold leading-tight mr-2 inline-block">
+              {name}
+            </h2>
+            <button
+              className="text-xs text-green-700 cursor-pointer mr-2"
+              onClick={() => openNaverMap(name)}
+            >
+              NAVER
+            </button>
+            <button
+              className="text-xs text-yellow-500 cursor-pointer"
+              onClick={() => openKakaoMap(name)}
+            >
+              KAKAO
+            </button>
           </div>
-        )}
-        <div className="flex items-center mt-4">
-          {status_number !== "01" && (
-            <span className={`text-error ${S_DOT}`}>폐업</span>
-          )}
-          <span
-            className={`${
-              category ? "text-foreground" : "text-placeholder"
-            } ${S_DOT}`}
+          <button
+            onClick={handleCloseAnimation}
+            className="cursor-pointer flex items-center justify-center text-sm flex-col font-bold"
           >
-            {category || "카테고리"}
-          </span>
-          <span
-            className={`${
-              phone ? "text-foreground" : "text-placeholder"
-            } ${S_DOT}`}
-          >
-            {phone || "전화번호"}
-          </span>
-          <span className={getHighlightColor(has_room !== "TRUE")}>
-            {has_room === "TRUE" ? "룸보유" : "룸없음"}
-          </span>
+            ✕
+          </button>
         </div>
-        <div className={land_address ? "text-foreground" : "text-placeholder"}>
-          {land_address || "주소"}
-        </div>
-        <div
-          className={
-            OperatingArray.length ? "text-foreground" : "text-placeholder"
-          }
-        >
-          {OperatingArray.length
-            ? OperatingArray.map((item, index) => {
-                const [date, time, ...rest] = item.split(" ");
-                return (
-                  <div
-                    key={`map-detail-operation-${index}`}
-                    className="flex gap-2"
+        <div className="overflow-y-scroll [&::-webkit-scrollbar]:hidden">
+          <div className="flex flex-col gap-1 w-full mb-4">
+            {keyword && (
+              <div
+                className={`${
+                  keyword ? "text-foreground" : "text-placeholder"
+                } flex gap-1 items-center w-full overflow-x-auto flex-nowrap whitespace-nowrap  py-1 [&::-webkit-scrollbar]:hidden sm:flex-wrap`}
+              >
+                {keyword.split(" ").map((word, index) => (
+                  <span
+                    key={`map-detail-keyword-${index}`}
+                    className="text-sm bg-gray-100 px-1 rounded shrink-0"
                   >
-                    <div className="min-w-10">{date}</div>
-                    <div>{time}</div>
-                    <div>{rest}</div>
-                  </div>
-                );
-              })
-            : "운영시간"}
+                    {word}
+                  </span>
+                ))}
+              </div>
+            )}
+            <MapDetailInfo restaurant={restaurant} />
+          </div>
+          <div className="sm:overflow-y-scroll sm:[&::-webkit-scrollbar]:hidden w-full">
+            <div className="mb-2">의견서 {(comments || []).length}건</div>
+            <Comment restaurant={restaurant} />
+          </div>
         </div>
-        {selectedRestaurants.length > 1 && (
-          <MapDetailList
-            activeRestaurantIdx={activeRestaurantIdx}
-            selectedRestaurants={selectedRestaurants}
-            selectedHandler={(index) => {
-              setActiveRestaurantIdx(index);
-            }}
-          />
-        )}
       </div>
-      <div
-        onClick={onClose}
-        className="absolute -top-10 right-0 text-foreground-muted cursor-pointer rounded-full bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.2)] w-[36px] h-[36px] font-bold flex items-center justify-center"
-      >
-        ✕
-      </div>
+      {selectedRestaurants.length > 1 && (
+        <MapDetailList
+          activeRestaurantIdx={activeRestaurantIdx}
+          selectedRestaurants={selectedRestaurants}
+          selectedHandler={(index) => {
+            setActiveRestaurantIdx(index);
+          }}
+        />
+      )}
     </div>
   );
 };
-
-// css
-const S_DOT =
-  "relative mr-4 after:content-[''] after:absolute after:w-0.5 after:h-0.5 after:top-[10px] after:-right-2 after:rounded-full after:bg-gray-400";
 
 export default MapDetail;

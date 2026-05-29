@@ -16,8 +16,8 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Assembly Dining",
-  description: "길 모르는 여의도 신입 위한 국회 앞 맛집 가이드",
+  title: "Deep Blue Board",
+  description: "Blue's Blog",
 };
 
 export default function RootLayout({

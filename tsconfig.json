@@ -30,7 +30,8 @@
       "@utils": ["src/utils/index"],
       "@auth": ["src/app/auth.ts"],
       "@admin/*": ["src/components/admin/*"],
-      "@components/common": ["src/components/common/index.ts"]
+      "@components/common": ["src/components/common/index.ts"],
+      "@components/*": ["src/components/*"]
     }
   },
   "include": [

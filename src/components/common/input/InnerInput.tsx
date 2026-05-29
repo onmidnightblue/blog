@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, useState } from "react";
+import { forwardRef, InputHTMLAttributes, useState } from "react";
 import SmallLoadingSpinner from "../loading/SmallLoadingSpinner";
 
 interface Props
@@ -8,73 +8,51 @@ interface Props
   loading?: boolean;
   value?: string;
   onChange: (value: string) => void;
-  validate?: (value: string) => boolean;
 }
 
-const InnerInput = ({
-  label,
-  error,
-  loading,
-  value = "",
-  onChange,
-  validate,
-  ...props
-}: Props) => {
-  const [localValue, setLocalValue] = useState(value || "");
-  const [isFocused, setIsFocused] = useState(false);
+const InnerInput = forwardRef<HTMLInputElement, Props>(
+  ({ label, error, loading, value = "", onChange, ...props }, ref) => {
+    const [isTouched, setIsTouched] = useState(false);
 
-  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    setLocalValue(value);
-    setIsFocused(true);
-    props.onFocus?.(e);
-  };
-
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    setIsFocused(false);
-    if (validate && localValue !== "" && !validate(localValue)) {
-      setLocalValue(value);
-    }
-    props.onBlur?.(e);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setLocalValue(newValue);
-    if (newValue === "" || !validate || validate(newValue)) {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.value;
+      setIsTouched(true);
       onChange(newValue);
-    }
-  };
+    };
 
-  const displayValue = isFocused ? localValue : value;
+    const displayError = isTouched ? error : null;
 
-  return (
-    <div className="flex flex-col w-full">
-      <div className="relative w-full text-sm">
-        <input
-          className={`
+    return (
+      <div className="flex flex-col w-full">
+        <div className="relative w-full text-sm">
+          <input
+            {...props}
+            ref={ref}
+            className={`
        px-1 py-0.5 w-full bg-gray-100 outline-none text-foreground
-            ${error ? "border border-error" : "border-blue-200"}
+            ${displayError ? "border border-error" : "border-blue-200"}
             ${loading ? "pr-6 opacity-70" : ""}
           `}
-          value={displayValue}
-          placeholder={label}
-          onChange={handleChange}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-          }}
-          {...props}
-        />
-        {loading && <SmallLoadingSpinner />}
+            value={value}
+            placeholder={label}
+            onChange={handleChange}
+            onBlur={() => setIsTouched(true)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+            }}
+          />
+          {loading && <SmallLoadingSpinner />}
+        </div>
+        {displayError && (
+          <span className="mt-0.5 text-[10px] text-error font-medium leading-none">
+            {displayError}
+          </span>
+        )}
       </div>
-      {error && (
-        <span className="mt-0.5 text-[10px] text-error font-medium leading-none">
-          {error}
-        </span>
-      )}
-    </div>
-  );
-};
+    );
+  }
+);
+
+InnerInput.displayName = "InnerInput";
 
 export default InnerInput;

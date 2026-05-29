@@ -29,7 +29,7 @@ const EditOperatingHour = ({
   }, [operating_hours]);
 
   const getDayColor = (day: number) => {
-    if (day === 5) return "text-blue-500";
+    if (day === 5) return "text-blue-400";
     if (day === 6) return "text-red-500";
     return "text-gray-600";
   };
@@ -78,7 +78,6 @@ const EditOperatingHour = ({
                         (oh[field.key as keyof OperatingHourType] as string) ||
                         ""
                       }
-                      validate={(value) => TIME_REGEX.test(value)}
                       placeholder={field.placeholder}
                       error={isErrorField ? errorMessage : ""}
                       onChange={(value) =>
@@ -91,7 +90,7 @@ const EditOperatingHour = ({
             </div>
           )}
           <div className="flex gap-2 items-center text-blue-400">
-            <div
+            <button
               onClick={() =>
                 handleHourChange(oh.day_of_week, { is_off: !oh.is_off })
               }
@@ -100,9 +99,9 @@ const EditOperatingHour = ({
                     `}
             >
               {oh.is_off ? "ON" : "OFF"}
-            </div>
+            </button>
             {index > 0 && !oh.is_off && (
-              <div
+              <button
                 onClick={() =>
                   handleHourChange(oh.day_of_week, {
                     open_time: displayHours[index - 1].open_time,
@@ -116,7 +115,7 @@ const EditOperatingHour = ({
                 className="text-sm cursor-pointer"
               >
                 SAME
-              </div>
+              </button>
             )}
           </div>
         </div>

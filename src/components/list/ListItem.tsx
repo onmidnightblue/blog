@@ -11,11 +11,11 @@ interface Props {
 }
 
 const ListItem = ({ isAdmin, restaurant }: Props) => {
-  const { id } = restaurant || {};
+  const { id, is_complete } = restaurant || {};
   const [isEditMode, setIsEditMode] = useState(false);
   const [formData, setFormData] = useState<Record<string, SupabaseValue>>({});
   const {
-    saveToSupabase,
+    updateRestaurant,
     saveOperatingHours,
     errorId,
     fieldKey,
@@ -37,25 +37,24 @@ const ListItem = ({ isAdmin, restaurant }: Props) => {
   const hasChanges = Object.keys(formData).length > 0;
 
   const handleSave = async () => {
-    try {
-      const basicInfoData = { ...formData };
-      delete basicInfoData.operating_hours;
+    const basicInfoData = { ...formData };
+    delete basicInfoData.operating_hours;
 
-      if (Object.keys(basicInfoData).length > 0) {
-        await saveToSupabase(basicInfoData);
-      }
-
-      if (formData.operating_hours) {
-        await saveOperatingHours(
-          formData.operating_hours as unknown as OperatingHourType[]
-        );
-      }
-
-      resetFormData();
-      setIsEditMode(false);
-    } catch (error) {
-      console.error("Error:", error);
+    if (Object.keys(basicInfoData).length > 0) {
+      await updateRestaurant({ id, data: basicInfoData });
     }
+
+    if (formData.operating_hours) {
+      await saveOperatingHours(
+        formData.operating_hours as unknown as OperatingHourType[]
+      );
+    }
+    resetFormData();
+    setIsEditMode(false);
+  };
+
+  const handleSelected = async () => {
+    await updateRestaurant({ id, data: { is_complete: !is_complete } });
   };
 
   return (
@@ -113,7 +112,15 @@ const ListItem = ({ isAdmin, restaurant }: Props) => {
               )}
             </div>
           ) : (
-            <button onClick={() => setIsEditMode(true)}>EDIT</button>
+            <div className="flex gap-4">
+              <input
+                type="checkbox"
+                checked={is_complete}
+                onChange={handleSelected}
+                className="cursor-pointer"
+              />
+              <button onClick={() => setIsEditMode(true)}>EDIT</button>
+            </div>
           )}
         </div>
       )}

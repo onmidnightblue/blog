@@ -30,7 +30,7 @@ const Search = () => {
       </label>
       {!inputValue && (
         <div
-          className={`absolute left-9 top-0 h-full w-[calc(100%-36px)] pointer-events-none transition-all 
+          className={`absolute left-9 top-0 h-full w-full pointer-events-none transition-all 
      ${isFocused ? "opacity-0 -translate-y-2" : "opacity-100"}`}
         >
           <div

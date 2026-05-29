@@ -13,9 +13,8 @@ export const useSyncRestaurants = () => {
     onError: (error: Error) => {
       console.error("Error:", error.message);
     },
-    onSuccess: (result) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["restaurants"] });
-      console.log(result);
     },
   });
 

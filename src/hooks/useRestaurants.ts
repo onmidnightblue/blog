@@ -28,7 +28,8 @@ export const useRestaurants = (id?: string) => {
       const { data } = await axios.get("/api/restaurants");
       return data.restaurants;
     },
-    staleTime: 1000 * 60 * 60, // 캐시 갱신
+    // staleTime: 1000 * 60 * 60, // 캐시 갱신
+    staleTime: 0,
     gcTime: 1000 * 60 * 60 * 24, // 캐시 삭제
   });
 
@@ -39,10 +40,10 @@ export const useRestaurants = (id?: string) => {
   }, [restaurants, setFilter]);
 
   const {
-    saveToSupabase,
+    updateRestaurant,
     isUpdating: isUpdatingRestaurant,
     error: errorRestaurant,
-  } = useRestaurantMutations(id);
+  } = useRestaurantMutations();
 
   const {
     saveOperatingHours,
@@ -75,7 +76,7 @@ export const useRestaurants = (id?: string) => {
     isError: !!errorInfo.message,
     fieldKey: errorInfo.fieldKey,
     errorId: errorOH ? variablesOH?.id : null,
-    saveToSupabase,
+    updateRestaurant,
     saveOperatingHours,
   };
 };

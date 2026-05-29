@@ -1,3 +1,4 @@
+import { KEYWORD_CATEGORY } from "@constants";
 import { RestaurantStoreState } from "@store";
 import {
   OperatingHourType,
@@ -39,25 +40,39 @@ export const timeFilter = (
   return isOpen && !isBreak;
 };
 
+// const categoryToTitleMap = KEYWORD_CATEGORY.reduce<Record<string, string>>(
+//   (acc, curr) => {
+//     if (curr.title === "기타") return acc;
+//     curr.category.forEach((subCat) => {
+//       acc[subCat] = curr.title;
+//     });
+//     return acc;
+//   },
+//   {}
+// );
+
 export const searchFilter = (
   restaurants: RestaurantType[],
   filters: Partial<RestaurantStoreState>
 ): RestaurantType[] => {
   const {
+    // selectedCategory = null,
     selectedCategories = [],
     searchTerm = "",
-    operatingOrder = "all",
-    statusOrder = "all",
     visibleOrder = "all",
     targetTimeFilter = null,
     sortOrder = "address_asc",
     isRoomRequired = false,
+    isCourseRequired = false,
+    selectionOrder = "all",
   } = filters || {};
 
   const filtered = restaurants.filter((restaurant) => {
+    // const mappedTitle = categoryToTitleMap[restaurant.category] || "기타";
     const conditions = [
+      // selectedCategory === null || mappedTitle === selectedCategory,
       selectedCategories.length === 0 ||
-        selectedCategories.includes(restaurant.category || ""),
+        selectedCategories.includes(restaurant.category),
       !searchTerm ||
         [
           restaurant.name,
@@ -65,17 +80,19 @@ export const searchFilter = (
           restaurant.category,
           restaurant.land_address,
         ].some((val) => val?.toLowerCase().includes(searchTerm.toLowerCase())),
-      operatingOrder === "all" ||
-        (operatingOrder === "with_operating") ===
-          restaurant?.operating_hours?.length > 0,
-      statusOrder === "all" || restaurant.status_number === statusOrder,
-      visibleOrder === "all" || String(restaurant.is_visible) === visibleOrder,
+      visibleOrder === "all" ||
+        restaurant.is_visible === (visibleOrder === "true"),
       targetTimeFilter
         ? restaurant.operating_hours?.some((oh) =>
             timeFilter(oh, targetTimeFilter)
           ) ?? false
         : true,
-      !isRoomRequired || restaurant.has_room === "TRUE",
+      !isRoomRequired || restaurant.has_room,
+      !isCourseRequired || restaurant.has_course,
+      selectionOrder === "all" ||
+        (selectionOrder === "selected"
+          ? restaurant.is_complete
+          : !restaurant.is_complete),
     ];
 
     return conditions.every(Boolean);

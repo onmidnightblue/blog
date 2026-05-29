@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@lib";
-import { SupabaseUpdateType } from "@types";
+import { OperatingHourType, SupabaseUpdateType } from "@types";
 import { TIME_REGEX } from "@constants";
+import { handleApiError } from "@utils";
 
 export async function GET() {
   try {
@@ -10,7 +11,9 @@ export async function GET() {
       throw new Error("Failed to create the server client instance.");
     const { data, error } = await supabase
       .from("restaurants")
-      .select(`*, operating_hours(*), comments(*)`)
+      .select(`*, operating_hours(*), comments(id)`)
+      .eq("comments.is_deleted", false)
+      .neq("status_number", "03") // 폐업제외
       .order("land_address", { ascending: true })
       .order("day_of_week", {
         referencedTable: "operating_hours",
@@ -23,17 +26,18 @@ export async function GET() {
 
     if (error) throw error;
 
+    const formattedData = data?.map((rest) => ({
+      ...rest,
+      comments: undefined,
+    }));
+
     return NextResponse.json({
       success: true,
-      count: data?.length ?? 0,
-      restaurants: data ?? [],
+      count: formattedData?.length ?? 0,
+      restaurants: formattedData ?? [],
     });
   } catch (error: unknown) {
-    const message = (error as Error)?.message ?? "Internal Server Error";
-    return NextResponse.json(
-      { success: false, error: message },
-      { status: 500 }
-    );
+    return handleApiError(error);
   }
 }
 
@@ -41,7 +45,6 @@ export async function PATCH(request: Request) {
   try {
     const body = await request.json();
     const { id, type, ...updateData } = body;
-
     const supabase = supabaseServer();
     if (!supabase)
       throw new Error("Failed to create the server client instance.");
@@ -101,19 +104,12 @@ export async function PATCH(request: Request) {
     });
 
     if (error) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 400 }
-      );
+      return handleApiError(error);
     }
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
-    const message = (error as Error)?.message ?? "Internal Server Error";
-    return NextResponse.json(
-      { success: false, error: message },
-      { status: 500 }
-    );
+    return handleApiError(error);
   }
 }
 
@@ -145,10 +141,47 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
-    const message = (error as Error)?.message ?? "Internal Server Error";
+    return handleApiError(error);
+  }
+}
+
+export async function POST(req: Request) {
+  const supabase = supabaseServer()!;
+  const body = await req.json();
+  const { id, operating_hours, ...restaurantData } = body;
+
+  const { data: existing } = await supabase
+    .from("restaurants")
+    .select("id")
+    .eq("id", id)
+    .single();
+
+  if (existing) {
     return NextResponse.json(
-      { success: false, error: message },
-      { status: 500 }
+      { error: "This Restaurant ID is already in use." },
+      { status: 409 }
     );
   }
+
+  const { error: resError } = await supabase
+    .from("restaurants")
+    .insert([{ id, ...restaurantData }]);
+  if (resError)
+    return NextResponse.json({ error: resError.message }, { status: 400 });
+
+  if (operating_hours && operating_hours.length > 0) {
+    const hoursToInsert = operating_hours.map(
+      ({ id, ...oh }: OperatingHourType) => ({
+        ...oh,
+        restaurant_id: id,
+      })
+    );
+    const { error: hourError } = await supabase
+      .from("operating_hours")
+      .insert(hoursToInsert);
+    if (hourError)
+      return NextResponse.json({ error: hourError.message }, { status: 400 });
+  }
+
+  return NextResponse.json({ success: true, id });
 }

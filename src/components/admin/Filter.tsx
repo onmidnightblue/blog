@@ -1,47 +1,36 @@
 import { SearchIcon } from "@assets";
 import {
-  OPERATING_LABELS,
-  OPERATING_CYCLE,
   SORT_LABELS,
   SORT_CYCLE,
-  STATUS_LABELS,
-  STATUS_CYCLE,
   VISIBLE_LABELS,
   VISIBLE_CYCLE,
+  SELECTION_LABELS,
+  SELECTION_CYCLE,
 } from "@constants";
 import { useRestaurantStore } from "@store";
 
 const Filter = ({}) => {
-  const {
-    sortOrder,
-    operatingOrder,
-    statusOrder,
-    visibleOrder,
-    setFilter,
-    cycleFilter,
-  } = useRestaurantStore();
+  const { sortOrder, selectionOrder, visibleOrder, setFilter, cycleFilter } =
+    useRestaurantStore();
 
   const toggles = [
     {
-      label: STATUS_LABELS[statusOrder],
-      key: "statusOrder",
-      cycle: STATUS_CYCLE,
+      label: SELECTION_LABELS[selectionOrder],
+      key: "selectionOrder",
+      cycle: SELECTION_CYCLE,
     },
     {
       label: VISIBLE_LABELS[visibleOrder],
       key: "visibleOrder",
       cycle: VISIBLE_CYCLE,
     },
-    {
-      label: OPERATING_LABELS[operatingOrder],
-      key: "operatingOrder",
-      cycle: OPERATING_CYCLE,
-    },
     { label: SORT_LABELS[sortOrder], key: "sortOrder", cycle: SORT_CYCLE },
   ] as const;
 
   return (
-    <div className="grid grid-cols-[1fr_repeat(4,80px)] items-center gap-4 px-4 pt-4">
+    <div
+      className={`grid grid-cols-[1fr_repeat(3,80px)] items-center gap-4 px-4 pt-4`}
+    >
       <div className="relative">
         <label
           htmlFor="admin-search-input"
@@ -60,13 +49,13 @@ const Filter = ({}) => {
       {toggles.map((toggle, index) => {
         const { label, key, cycle } = toggle || {};
         return (
-          <div
+          <button
             key={index}
             className="text-center transition cursor-pointer select-none text-foreground hover:text-blue-400 "
             onClick={() => cycleFilter(key, cycle)}
           >
             {label}
-          </div>
+          </button>
         );
       })}
     </div>

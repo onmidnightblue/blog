@@ -7,7 +7,12 @@ import {
   TransformWrapper,
 } from "react-zoom-pan-pinch";
 import { AssemblyMap } from "@assets";
-import { useMapActions, useMapCluster, useRestaurants } from "@hooks";
+import {
+  useIsMobile,
+  useMapActions,
+  useMapCluster,
+  useRestaurants,
+} from "@hooks";
 import { RestaurantType } from "@types";
 import { Toast } from "@components/common";
 import MapPin from "./MapPin";
@@ -15,6 +20,7 @@ import MapDetail from "./MapDetail";
 import MapClusterMarker from "./MapClusterMarker";
 
 const Map = ({}) => {
+  const isMobile = useIsMobile();
   const { isLoading, isError, restaurants } = useRestaurants();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -33,8 +39,6 @@ const Map = ({}) => {
     selectedRestaurants.length > 0
       ? parseFloat(selectedRestaurants[0].map_y)
       : null;
-
-  console.log(activeX, activeY);
 
   const { clusters } = useMapCluster({ restaurants, scale });
 
@@ -95,13 +99,13 @@ const Map = ({}) => {
   }
 
   return (
-    <main className="relative flex items-center justify-center w-full h-full overflow-hidden">
+    <main className="relative flex items-center justify-center w-full h-full">
       <TransformWrapper
-        initialScale={1}
-        minScale={1}
-        maxScale={10}
-        limitToBounds={false}
+        initialScale={isMobile ? 0.8 : 1}
+        minScale={isMobile ? 0.8 : 1}
+        maxScale={6}
         smooth={true}
+        limitToBounds={true}
         wheel={{
           step: 0.003,
           wheelDisabled: false,
@@ -111,16 +115,13 @@ const Map = ({}) => {
         onTransform={(ref) => setScale(ref.state.scale)}
         ref={transformComponentRef}
       >
-        <TransformComponent
-          wrapperClass="!w-full !h-full flex justify-center items-center"
-          contentClass="!h-full"
-        >
+        <TransformComponent wrapperClass="!w-full !h-full flex justify-center items-center">
           <div
             ref={containerRef}
             onClick={handleMapClick}
-            className={`relative flex items-center justify-center w-max active:cursor-grabbing`}
+            className={`relative flex items-center justify-center w-[839px] h-[837px] active:cursor-grabbing ml-70 -mr-55 mt-100 -mb-20 sm:ml-0 sm:mr-0 sm:mt-0 sm:-mb-0`}
           >
-            <AssemblyMap className="w-full h-auto" />
+            <AssemblyMap className="w-full h-full mx-auto" />
             {clusters.map((c) => {
               const [x, y] = c.geometry.coordinates;
               const { cluster, point_count } = c.properties;

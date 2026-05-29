@@ -1,31 +1,26 @@
 import { create } from "zustand";
+import { SORT_CYCLE, VISIBLE_CYCLE, SELECTION_CYCLE } from "@constants";
 import {
-  OPERATING_CYCLE,
-  SORT_CYCLE,
-  STATUS_CYCLE,
-  VISIBLE_CYCLE,
-} from "@constants";
-import {
-  OperationgFilterType,
   RestaurantType,
   SortFilterType,
-  StatusFilterType,
   TimeType,
   VisibleFilterType,
+  SelectionFilterType,
 } from "@types";
 
 export interface RestaurantStoreState {
   restaurants: RestaurantType[];
   categories: string[];
+  selectedCategory: string | null;
   selectedCategories: string[];
   searchTerm: string;
   sortOrder: SortFilterType;
-  operatingOrder: OperationgFilterType;
-  statusOrder: StatusFilterType;
   visibleOrder: VisibleFilterType;
   targetTimeFilter: TimeType | null;
   visibleCount: number;
   isRoomRequired: boolean;
+  isCourseRequired: boolean;
+  selectionOrder: SelectionFilterType;
 }
 
 interface RestaurantStoreActions {
@@ -39,8 +34,8 @@ interface RestaurantStoreActions {
   ) => void;
   resetFilters: () => void;
   loadMore: () => void;
-  toggleCategory: (category: string) => void;
   setTargetTimeFilter: (filter: TimeType | null) => void;
+  toggleCategory: (category: string) => void;
 }
 
 export const useRestaurantStore = create<
@@ -49,15 +44,16 @@ export const useRestaurantStore = create<
   // states
   restaurants: [],
   categories: [],
+  selectedCategory: null,
   selectedCategories: [],
   searchTerm: "",
   sortOrder: SORT_CYCLE[0],
-  operatingOrder: OPERATING_CYCLE[0],
-  statusOrder: STATUS_CYCLE[0],
   visibleOrder: VISIBLE_CYCLE[0],
+  selectionOrder: SELECTION_CYCLE[0],
   targetTimeFilter: null,
   visibleCount: 20,
   isRoomRequired: false,
+  isCourseRequired: false,
 
   // actions
   setFilter: (key, value) =>
@@ -73,9 +69,7 @@ export const useRestaurantStore = create<
         const uniqueCategories = Array.from(
           new Set(
             restaurants
-              .filter(
-                (r) => r.is_visible === "TRUE" && r.status_number === "01"
-              )
+              .filter((r) => r.is_visible && r.status_number === "01")
               .map((r) => r.category)
               .filter(Boolean)
           )
@@ -84,6 +78,7 @@ export const useRestaurantStore = create<
       }
       return newState;
     }),
+
   cycleFilter: <K extends keyof RestaurantStoreState>(
     key: K,
     cycle: RestaurantStoreState[K][]
@@ -96,25 +91,33 @@ export const useRestaurantStore = create<
         visibleCount: 20,
       } as Partial<RestaurantStoreState & RestaurantStoreActions>;
     }),
+
   loadMore: () => set((state) => ({ visibleCount: state.visibleCount + 20 })),
+
   resetFilters: () =>
     set({
-      selectedCategories: [],
+      selectedCategory: null,
       searchTerm: "",
       sortOrder: SORT_CYCLE[0],
-      operatingOrder: OPERATING_CYCLE[0],
       visibleCount: 20,
       isRoomRequired: false,
+      isCourseRequired: false,
     }),
+
   toggleCategory: (category) =>
     set((state) => {
+      // const nextCategory =
+      //   !title || state.selectedCategory === title ? null : title;
+      // return { selectedCategory: nextCategory, visibleCount: 20 };
+
+      if (category === "") return { selectedCategories: [], visibleCount: 20 };
       const isSelected = state.selectedCategories.includes(category);
       const nextCategories = isSelected
         ? state.selectedCategories.filter((c) => c !== category)
         : [...state.selectedCategories, category];
-
       return { selectedCategories: nextCategories, visibleCount: 20 };
     }),
+
   setTargetTimeFilter: (filter) =>
     set({ targetTimeFilter: filter, visibleCount: 20 }),
 }));

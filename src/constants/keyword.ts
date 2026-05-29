@@ -1,7 +1,121 @@
+import {
+  SandwichIcon,
+  MeatIcon,
+  ChefHatIcon,
+  HandPlatterIcon,
+  CoffeeIcon,
+  BeerIcon,
+  ShrimpIcon,
+  PizzaIcon,
+  EllipsisIcon,
+  CookingPotIcon,
+  RiceIcon,
+  SushiIcon,
+  EarthIcon,
+} from "@assets";
+
 export const KEYWORD_SUGGESTIONS = [
   "부대찌개",
   "돈까스",
   "여의도 혼밥",
   "파스타",
   "제육볶음",
+];
+
+export const KEYWORD_CATEGORY = [
+  {
+    title: "국물요리",
+    Icon: CookingPotIcon,
+    category: [
+      "감자탕",
+      "곰탕",
+      "닭도리탕",
+      "돼지김치찌개",
+      "된장찌개",
+      "생태탕",
+      "순대국",
+      "순두부",
+      "양지탕",
+      "오리백숙",
+      "육개장",
+      "콩나물국밥",
+      "해장국",
+      "삼계탕",
+    ],
+  },
+  {
+    title: "백반/분식",
+    Icon: RiceIcon,
+    category: [
+      "경양식돈까스",
+      "김밥",
+      "냉면",
+      "백반",
+      "분식",
+      "비빔밥",
+      "수제비",
+      "솥밥",
+      "직화볶음",
+      "쭈꾸미",
+      "칼국수",
+      "평양냉면",
+      "죽",
+      "도시락",
+    ],
+  },
+  {
+    title: "일식",
+    Icon: SushiIcon,
+    category: ["돈카츠", "라멘", "소바", "일식", "카레", "스시오마카세"],
+  },
+  {
+    title: "중식",
+    Icon: HandPlatterIcon,
+    category: ["중식", "중식코스"],
+  },
+  {
+    title: "양식",
+    Icon: PizzaIcon,
+    category: ["수제버거", "양식", "케밥", "패스트푸드", "햄버거", "치킨"],
+  },
+  {
+    title: "세계요리",
+    Icon: EarthIcon,
+    category: ["쌀국수", "태국요리", "멕시코"],
+  },
+  {
+    title: "고기",
+    Icon: MeatIcon,
+    category: ["돼지갈비", "보쌈/족발", "삼겹살", "소고기", "샤브샤브"],
+  },
+  {
+    title: "해산물",
+    Icon: ShrimpIcon,
+    category: ["복어", "해물/생선요리", "해산물"],
+  },
+  {
+    title: "코스/뷔페",
+    Icon: ChefHatIcon,
+    category: ["한정식", "스시오마카세", "중식코스", "뷔페"],
+  },
+  {
+    title: "가벼운 식사",
+    Icon: SandwichIcon,
+    category: ["포케", "샌드위치", "샐러드"],
+  },
+  {
+    title: "카페/찻집",
+    Icon: CoffeeIcon,
+    category: ["찻집", "카페"],
+  },
+  {
+    title: "술",
+    Icon: BeerIcon,
+    category: ["위스키", "이자카야", "피맥", "호프", "치킨"],
+  },
+  {
+    title: "기타",
+    Icon: EllipsisIcon,
+    category: [],
+  },
 ];

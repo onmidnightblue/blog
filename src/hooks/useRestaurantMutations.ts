@@ -2,13 +2,19 @@ import axios from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RestaurantType, SupabaseValue } from "@types";
 
-export const useRestaurantMutations = (restaurantId?: string) => {
+export const useRestaurantMutations = () => {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: async (data: Record<string, SupabaseValue>) => {
+  const updateMutation = useMutation({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Record<string, SupabaseValue>;
+    }) => {
       const { data: response } = await axios.patch("/api/restaurants", {
-        id: restaurantId,
+        id,
         type: "RESTAURANTS",
         ...data,
       });
@@ -18,10 +24,10 @@ export const useRestaurantMutations = (restaurantId?: string) => {
       queryClient.setQueryData<RestaurantType[]>(["restaurants"], (old) => {
         if (!old) return [];
         return old.map((rest) =>
-          String(rest.id) === String(restaurantId)
+          String(rest.id) === String(variables.id)
             ? {
                 ...rest,
-                ...variables,
+                ...variables.data,
                 ...responseData,
               }
             : rest
@@ -30,14 +36,24 @@ export const useRestaurantMutations = (restaurantId?: string) => {
     },
   });
 
-  const saveToSupabase = async (data: Record<string, SupabaseValue>) => {
-    if (!restaurantId) return;
-    return mutation.mutateAsync(data);
-  };
+  const createMutation = useMutation({
+    mutationFn: async (newData: Partial<RestaurantType>) => {
+      const { data: response } = await axios.post("/api/restaurants", {
+        type: "RESTAURANTS",
+        ...newData,
+      });
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["restaurants"] });
+    },
+  });
 
   return {
-    saveToSupabase,
-    isUpdating: mutation.isPending,
-    error: mutation.error,
+    updateRestaurant: updateMutation.mutateAsync,
+    createRestaurant: createMutation.mutateAsync,
+    isUpdating: updateMutation.isPending,
+    isCreating: createMutation.isPending,
+    error: updateMutation.error || createMutation.error,
   };
 };
