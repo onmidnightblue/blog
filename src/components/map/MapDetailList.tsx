@@ -1,5 +1,6 @@
+import { useEffect, useMemo, useRef, useState } from "react";
 import { RestaurantType } from "@types";
-import { useEffect, useRef, useState } from "react";
+import { FlagIcon } from "@assets";
 
 interface Props {
   selectedRestaurants: RestaurantType[];
@@ -13,6 +14,14 @@ const MapDetailList = ({ selectedRestaurants, selectedHandler }: Props) => {
   const holdTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const animationRef = useRef<number | null>(null);
   const isHoldingRef = useRef(false);
+  const buildingMatch = useMemo(
+    () =>
+      selectedRestaurants?.[0]?.land_address.match(
+        /\d+(?:-\d+)?\s+([가-힣A-Za-z0-9]+)/
+      ),
+    [selectedRestaurants]
+  );
+  const buildingName = buildingMatch ? buildingMatch[1] : null;
 
   const handleScroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
@@ -81,7 +90,10 @@ const MapDetailList = ({ selectedRestaurants, selectedHandler }: Props) => {
 
   return (
     <div className="flex flex-col gap-1 mb-8 w-full">
-      <div className="text-sm">같은 건물 다른 식당</div>
+      <div className="text-md mb-1 flex gap-1">
+        <FlagIcon />
+        {buildingName} 내 식당 {selectedRestaurants.length}곳
+      </div>
       <div className="flex gap-2 items-center">
         <div
           onClick={(e) => handleButtonClick(e, "left")}
@@ -108,11 +120,13 @@ const MapDetailList = ({ selectedRestaurants, selectedHandler }: Props) => {
             return (
               <div
                 key={`map-detail-restaurant-${id}`}
-                className="break-keep shrink-0 cursor-pointer py-2 transition hover:scale-105 bg-gray-100 rounded-lg px-2"
+                className="break-keep shrink-0 cursor-pointer flex flex-col gap-1"
                 onClick={() => selectedHandler(index)}
               >
                 <div className="text-xs">{floor}</div>
-                <div>{name}</div>
+                <div className="px-2 py-1 hover:scale-105 bg-gray-100 rounded-lg ">
+                  {name}
+                </div>
               </div>
             );
           })}

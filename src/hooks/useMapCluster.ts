@@ -8,7 +8,7 @@ type Props = {
 };
 
 const C = {
-  RADIUS: 80,
+  RADIUS: 40,
   MAX_ZOOM: 40,
   SCALE_MULTIPLIER: 4.0,
 } as const;
