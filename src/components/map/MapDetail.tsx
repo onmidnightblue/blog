@@ -125,6 +125,7 @@ const MapDetail = ({
         </div>
         {selectedRestaurants.length > 1 && (
           <MapDetailList
+            activeRestaurantIdx={activeRestaurantIdx}
             selectedRestaurants={selectedRestaurants}
             selectedHandler={(index) => {
               setActiveRestaurantIdx(index);

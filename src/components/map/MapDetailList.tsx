@@ -3,11 +3,16 @@ import { RestaurantType } from "@types";
 import { FlagIcon } from "@assets";
 
 interface Props {
+  activeRestaurantIdx: number;
   selectedRestaurants: RestaurantType[];
   selectedHandler: (index: number) => void;
 }
 
-const MapDetailList = ({ selectedRestaurants, selectedHandler }: Props) => {
+const MapDetailList = ({
+  activeRestaurantIdx,
+  selectedRestaurants,
+  selectedHandler,
+}: Props) => {
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -117,6 +122,7 @@ const MapDetailList = ({ selectedRestaurants, selectedHandler }: Props) => {
               /((?:지하\s*|B)?\d+(?:[~,-]\d+)?층)/i
             );
             const floor = match?.[1] || null;
+            const isActive = activeRestaurantIdx === index;
             return (
               <div
                 key={`map-detail-restaurant-${id}`}
@@ -124,7 +130,11 @@ const MapDetailList = ({ selectedRestaurants, selectedHandler }: Props) => {
                 onClick={() => selectedHandler(index)}
               >
                 <div className="text-xs">{floor}</div>
-                <div className="px-2 py-1 hover:scale-105 bg-gray-100 rounded-lg ">
+                <div
+                  className={`px-2 py-1 hover:scale-105 rounded-lg ${
+                    isActive ? "bg-blue-100" : "bg-gray-100"
+                  }`}
+                >
                   {name}
                 </div>
               </div>
