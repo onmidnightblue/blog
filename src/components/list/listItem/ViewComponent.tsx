@@ -15,6 +15,7 @@ const ViewComponent = ({ restaurant }: Props) => {
     status_number,
     is_visible,
     has_room,
+    has_course,
     category,
     phone,
     land_address,
@@ -83,13 +84,18 @@ const ViewComponent = ({ restaurant }: Props) => {
           {status_number === "01" ? "운영" : "폐업"}
         </span>
         <span
-          className={`${getHighlightColor(!is_visible)} ${
-            has_room ? S_DOT : ""
-          }`}
+          className={`${getHighlightColor(!is_visible)} ${S_DOT}`}
         >
           {is_visible ? "표시함" : "표시안함"}
         </span>
-        {has_room && <span>룸 보유</span>}
+        <span
+          className={`${getHighlightColor(!has_room)} ${
+            has_course ? S_DOT : ""
+          }`}
+        >
+          {has_room ? "룸보유" : "룸없음"}
+        </span>
+        {has_course && <span>코스요리</span>}
       </div>
       <div className="flex items-center">
         <span

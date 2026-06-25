@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { RestaurantType } from "@types";
-import { useCommentMutations } from "@hooks";
+import { useCommentMutations, useComments } from "@hooks";
 import CommentItem from "./comment/CommentItem";
 import NewCommentModal from "./comment/NewCommentModal";
 import DeleteCommentModal from "./comment/DeleteCommentModal";
@@ -15,8 +15,9 @@ const Comment = ({ restaurant }: Props) => {
   const [deleteTargetId, setDeleteTargetId] = useState<string | number | null>(
     null
   );
-  const { comments, userId, saveComment, deleteComment } =
+  const { userId, saveComment, deleteComment } =
     useCommentMutations(restaurantId);
+  const { data: comments = [] } = useComments(restaurantId, false);
 
   return (
     <div className="sm:pt-0 w-full mt-4">

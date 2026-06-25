@@ -31,7 +31,7 @@ const EditBasicInfo = ({
   ];
   const COURSE_OPTIONS: [string, string][] = [
     ["true", "코스있음"],
-    ["false", "일반"],
+    ["false", "코스없음"],
   ];
 
   return (
