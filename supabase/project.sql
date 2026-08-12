@@ -1,0 +1,13 @@
+-- Supabase project 테이블
+-- columns: id (int8), created_at (timestamptz), content (text)
+--
+-- content JSON 형식:
+-- {
+--   "title": "프로젝트명",
+--   "link": "https://example.com",
+--   "imageUrl": "https://...supabase.co/storage/v1/object/public/project-images/...",
+--   "description": "10줄 정도 설명"
+-- }
+--
+-- 이미지 업로드용 Storage bucket: project-images (public)
+-- 설정 방법은 supabase/project-storage.sql 참고

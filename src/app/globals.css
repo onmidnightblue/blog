@@ -128,3 +128,282 @@ input::placeholder {
   opacity: 1;
 }
 
+@media (min-width: 768px) {
+  .portfolio-layout a,
+  .portfolio-layout button {
+    transition:
+      color 0.3s ease,
+      background-color 0.3s ease,
+      border-color 0.3s ease,
+      opacity 0.3s ease,
+      text-decoration-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+}
+
+.project-feed-swiper {
+  height: 100%;
+  width: 100%;
+}
+
+.project-feed-swiper .swiper-wrapper {
+  align-items: stretch;
+  height: 100%;
+}
+
+.project-feed-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 3rem 0.75rem;
+}
+
+.project-feed-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--foreground);
+  background: var(--background);
+  border: 1px solid color-mix(in srgb, var(--foreground) 15%, transparent);
+  border-radius: 9999px;
+  cursor: pointer;
+}
+
+.project-feed-nav.swiper-button-disabled,
+.project-feed-nav:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .portfolio-layout .project-feed-nav {
+    transition:
+      color 0.3s ease,
+      background-color 0.3s ease,
+      border-color 0.3s ease,
+      opacity 0.3s ease;
+  }
+
+  .portfolio-layout .project-feed-nav:not(:disabled):hover {
+    border-color: color-mix(in srgb, var(--foreground) 30%, transparent);
+  }
+}
+
+.project-feed-slide {
+  width: clamp(16rem, 85vw, 20rem);
+  max-width: 20rem;
+  height: 100%;
+}
+
+@media (min-width: 640px) {
+  .project-feed-slide {
+    width: clamp(18rem, 40vw, 20rem);
+  }
+}
+
+@media (min-width: 768px) {
+  .project-feed-slide {
+    width: 20rem;
+  }
+}
+
+.project-feed-slide--loader {
+  width: 5rem;
+}
+
+.project-card-description {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.board-editor-content {
+  min-height: 420px;
+  padding: 1rem;
+  outline: none;
+}
+
+.board-editor-content p.is-editor-empty:first-child::before {
+  color: var(--placeholder);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.board-editor-content > * + * {
+  margin-top: 0.75rem;
+}
+
+.board-editor-content p,
+.board-editor-content li,
+.board-editor-content blockquote {
+  white-space: pre-line;
+}
+
+.board-editor-content p:empty,
+.board-editor-content p:has(> br:only-child) {
+  min-height: 1.5em;
+}
+
+.board-editor-content h2 {
+  font-family: var(--font-paperozi);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.board-editor-content h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.board-editor-content ul,
+.board-editor-content ol {
+  padding-left: 1.25rem;
+}
+
+.board-editor-content ul {
+  list-style: disc;
+}
+
+.board-editor-content ol {
+  list-style: decimal;
+}
+
+.board-editor-content blockquote {
+  padding-left: 1rem;
+  border-left: 3px solid color-mix(in srgb, var(--foreground) 20%, transparent);
+  color: var(--foreground-muted);
+}
+
+.board-editor-content pre {
+  padding: 0.875rem 1rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+  border-radius: 0.375rem;
+}
+
+.board-editor-content code {
+  font-size: 0.875em;
+}
+
+.board-post-content > * + * {
+  margin-top: 0.75rem;
+}
+
+.board-post-content p,
+.board-post-content li,
+.board-post-content blockquote {
+  white-space: pre-line;
+}
+
+.board-post-content p:empty,
+.board-post-content p:has(> br:only-child) {
+  min-height: 1.5em;
+}
+
+.board-post-content h2 {
+  font-family: var(--font-paperozi);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.board-post-content h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.board-post-content ul,
+.board-post-content ol {
+  padding-left: 1.25rem;
+}
+
+.board-post-content ul {
+  list-style: disc;
+}
+
+.board-post-content ol {
+  list-style: decimal;
+}
+
+.board-post-content blockquote {
+  padding-left: 1rem;
+  border-left: 3px solid color-mix(in srgb, var(--foreground) 20%, transparent);
+  color: var(--foreground-muted);
+}
+
+.board-post-content pre {
+  padding: 0.875rem 1rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+  border-radius: 0.375rem;
+}
+
+.board-post-content code {
+  font-size: 0.875em;
+}
+
+/* contact platform game */
+.contact-platform__stage {
+  background: #ffffff;
+  outline: none;
+}
+
+.contact-platform__viewport,
+.contact-platform__world,
+.contact-platform__pixel {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.contact-platform__world {
+  will-change: transform;
+}
+
+.contact-platform__player {
+  will-change: transform;
+}
+
+.contact-platform__pixel {
+  position: absolute;
+}
+
+.contact-platform__mushroom,
+.contact-platform__collectible {
+  pointer-events: none;
+}
+
+.contact-platform__collectible {
+  animation: contact-platform-bob 1.5s ease-in-out infinite;
+}
+
+@keyframes contact-platform-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.contact-platform__hud span {
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(4px);
+}
+

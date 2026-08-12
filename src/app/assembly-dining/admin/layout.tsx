@@ -1,5 +1,5 @@
-import React from "react";
 import { auth, signIn } from "@auth";
+import { isAdminEmail } from "@lib";
 
 const layout = async ({ children }: { children: React.ReactNode }) => {
   const session = await auth();
@@ -10,7 +10,7 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
         <form
           action={async () => {
             "use server";
-            await signIn("google");
+            await signIn("google", { redirectTo: "/" });
           }}
         >
           <button className="text-foreground" type="submit">
@@ -21,8 +21,7 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  const adminEmails = process.env.ADMIN_EMAILS?.split(",") || [];
-  if (!adminEmails.includes(session?.user?.email ?? "")) {
+  if (!(await isAdminEmail(session.user?.email))) {
     return (
       <div className="flex flex-col items-center justify-center h-screen text-error">
         <h1 className="font-bold text-md">Access Denied.</h1>

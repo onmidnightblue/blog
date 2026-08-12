@@ -1,0 +1,4 @@
+-- Supabase Storage 설정
+-- Dashboard > Storage > New bucket
+-- Name: project-images
+-- Public bucket: ON

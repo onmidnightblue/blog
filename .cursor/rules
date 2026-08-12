@@ -1,0 +1,4 @@
+- App Router 사용, Pages Router 금지
+- 상태는 Zustand, 서버 상태는 React Query
+- Tailwind utility 우선, inline style 금지
+- 타입 any 금지

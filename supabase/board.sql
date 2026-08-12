@@ -1,0 +1,10 @@
+-- Supabase board 테이블 기준
+-- columns: id (int8), created_at (timestamptz), content (text)
+--
+-- content JSON 형식:
+-- {
+--   "title": "제목",
+--   "summary": "목록 요약",
+--   "tags": ["Frontend", "Next.js"],
+--   "body": "<p>본문 HTML</p>"
+-- }
