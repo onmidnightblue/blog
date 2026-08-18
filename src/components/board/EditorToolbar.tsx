@@ -2,6 +2,8 @@
 
 import type { Editor } from "@tiptap/react";
 import { useEditorState } from "@tiptap/react";
+import axios from "axios";
+import { useRef, useState } from "react";
 
 interface Props {
   editor: Editor | null;
@@ -11,29 +13,33 @@ interface ToolbarButtonProps {
   label: string;
   isActive?: boolean;
   onClick: () => void;
+  disabled?: boolean;
 }
 
 const TEXT_COLORS = [
-  { label: "Default", value: "" },
-  { label: "Black", value: "#333333" },
+  { label: "Default", value: "#333333" },
   { label: "Gray", value: "#666666" },
   { label: "Red", value: "#bb3030" },
-  { label: "Orange", value: "#c45c00" },
   { label: "Green", value: "#2f7a4f" },
   { label: "Blue", value: "#2563eb" },
-  { label: "Purple", value: "#7c3aed" },
 ] as const;
 
-const ToolbarButton = ({ label, isActive, onClick }: ToolbarButtonProps) => (
+const ToolbarButton = ({
+  label,
+  isActive,
+  onClick,
+  disabled,
+}: ToolbarButtonProps) => (
   <button
     type="button"
     aria-label={label}
     title={label}
     onClick={onClick}
-    className={`min-w-9 px-2 py-1.5 text-sm rounded-md border md:transition-colors md:duration-300 ${
+    disabled={disabled}
+    className={`min-w-9 rounded-md border px-2 py-1.5 text-sm md:transition-colors md:duration-300 disabled:opacity-50 ${
       isActive
-        ? "bg-foreground text-background border-foreground"
-        : "text-foreground-muted border-foreground/15 md:hover:text-foreground md:hover:border-foreground/30"
+        ? "border-foreground bg-foreground text-background"
+        : "border-foreground/15 text-foreground-muted md:hover:border-foreground/30 md:hover:text-foreground"
     }`}
   >
     {label}
@@ -41,6 +47,8 @@ const ToolbarButton = ({ label, isActive, onClick }: ToolbarButtonProps) => (
 );
 
 const EditorToolbar = ({ editor }: Props) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const currentColor = useEditorState({
     editor,
     selector: ({ editor: activeEditor }) =>
@@ -58,8 +66,29 @@ const EditorToolbar = ({ editor }: Props) => {
     editor.chain().focus().setColor(color).run();
   };
 
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) return;
+
+    setIsUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const { data } = await axios.post("/api/project/upload", formData);
+      editor.chain().focus().setImage({ src: data.url }).run();
+    } catch (error) {
+      console.error(error);
+      window.alert("Failed to upload image. Please try again later.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
-    <div className="flex flex-wrap gap-2 p-3 border border-b-0 border-foreground/10 rounded-t-md bg-background">
+    <div className="flex w-min shrink-0 flex-col gap-2 border border-y-0 border-l-0 border-foreground/10 bg-background p-3">
       <ToolbarButton
         label="H2"
         isActive={editor.isActive("heading", { level: 2 })}
@@ -104,16 +133,28 @@ const EditorToolbar = ({ editor }: Props) => {
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
       />
       <ToolbarButton
-        label="quote"
+        label="''"
         isActive={editor.isActive("blockquote")}
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
       />
       <ToolbarButton
-        label="code"
+        label="</>"
         isActive={editor.isActive("codeBlock")}
         onClick={() => editor.chain().focus().toggleCodeBlock().run()}
       />
-      <div className="flex items-center gap-1.5 pl-2">
+      <ToolbarButton
+        label="img"
+        disabled={isUploading}
+        onClick={() => fileInputRef.current?.click()}
+      />
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+        className="hidden"
+        onChange={handleImageUpload}
+      />
+      <div className="flex flex-col items-center gap-1.5">
         {TEXT_COLORS.map(({ label, value }) => (
           <button
             key={label}
@@ -121,7 +162,7 @@ const EditorToolbar = ({ editor }: Props) => {
             aria-label={`${label} color`}
             title={`${label} color`}
             onClick={() => applyColor(value)}
-            className={`w-6 h-6 rounded-full border md:transition-transform md:duration-300 md:hover:scale-110 ${
+            className={`h-6 w-6 rounded-full border md:transition-transform md:duration-300 md:hover:scale-110 ${
               currentColor === value
                 ? "border-foreground ring-2 ring-foreground/20"
                 : "border-foreground/15"
@@ -134,14 +175,14 @@ const EditorToolbar = ({ editor }: Props) => {
         <label
           aria-label="Custom color"
           title="Custom color"
-          className="relative flex items-center justify-center w-8 h-8 rounded-md border cursor-pointer border-foreground/15 md:transition-colors md:duration-300 md:hover:border-foreground/30"
+          className="relative flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-foreground/15 md:transition-colors md:duration-300 md:hover:border-foreground/30"
         >
-          <span className="text-xs font-medium text-foreground-muted">#</span>
+          <span className="text-xs text-foreground-muted py-1.5 text-center">#</span>
           <input
             type="color"
             value={currentColor || "#333333"}
             onChange={(event) => applyColor(event.target.value)}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
           />
         </label>
       </div>

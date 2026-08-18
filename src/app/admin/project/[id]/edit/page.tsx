@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import ProjectForm from "@components/project/ProjectForm";
 import { getProjectById } from "../../../../../lib/project";
@@ -17,27 +16,16 @@ export default async function AdminProjectEditPage({ params }: Props) {
   if (!project) notFound();
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 md:px-8 md:py-12">
-      <header className="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="font-paperozi text-3xl font-bold text-foreground">
-            Project Edit
-          </h1>
-          <p className="mt-2 text-sm text-foreground-muted">{project.title}</p>
-        </div>
-        <Link
-          href="/project"
-          className="px-4 py-2 text-sm text-foreground-muted border border-foreground/15 rounded-md md:transition-colors md:duration-300 md:hover:text-foreground md:hover:border-foreground/30"
-        >
-          Back to Project
-        </Link>
-      </header>
+    <div className="flex h-dvh flex-col overflow-hidden px-4 py-8 md:px-8 md:py-10">
       <ProjectForm
         projectId={project.id}
         initialTitle={project.title}
         initialLink={project.link}
         initialImageUrl={project.imageUrl}
         initialDescription={project.description}
+        pageTitle="Project Edit"
+        pageDescription={project.title}
+        backLink={{ href: "/project", label: "← Back to Project" }}
         submitLabel="Update"
       />
     </div>

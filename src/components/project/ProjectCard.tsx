@@ -71,7 +71,7 @@ const ProjectCard = ({ project, isAdmin = false, className = "" }: Props) => {
       </div>
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col p-3 sm:p-4">
-        <h2 className="font-paperozi shrink-0 overflow-hidden text-base font-bold leading-5 text-foreground line-clamp-2 h-10 sm:text-lg">
+        <h2 className="font-paperozi shrink-0 overflow-hidden text-base font-bold leading-5 text-foreground line-clamp-2 sm:text-lg">
           {project.title}
         </h2>
 
@@ -81,7 +81,7 @@ const ProjectCard = ({ project, isAdmin = false, className = "" }: Props) => {
               href={project.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="block h-4 truncate font-sans text-xs leading-4 text-foreground-muted underline underline-offset-2 md:transition-colors md:duration-300"
+              className="block h-4 truncate font-sans text-xs leading-4 text-link underline underline-offset-2 md:transition-colors md:duration-300 md:hover:text-link-hover"
             >
               {project.link}
             </a>
@@ -91,7 +91,7 @@ const ProjectCard = ({ project, isAdmin = false, className = "" }: Props) => {
         </div>
 
         {project.description && (
-          <p className="project-card-description mt-3 shrink-0 text-sm leading-relaxed text-foreground-muted">
+          <p className="project-card-description mt-10 shrink-0 text-sm leading-relaxed text-foreground-muted">
             {project.description}
           </p>
         )}
@@ -101,7 +101,8 @@ const ProjectCard = ({ project, isAdmin = false, className = "" }: Props) => {
             <ProjectCardActions project={project} />
           </div>
         )}
-      </div>    </article>
+      </div>
+    </article>
   );
 };
 

@@ -1,10 +1,13 @@
-import ContactGameClient from "@components/contact/ContactGameClient";
+import ContactContent from "@components/contact/ContactContent";
+import PageShell from "@components/layout/PageShell";
+import PageHeader from "@components/layout/PageHeader";
 
 const page = () => {
   return (
-    <div className="flex flex-1 min-h-0 flex-col">
-      <ContactGameClient />
-    </div>
+    <PageShell>
+      <PageHeader title="Contact" />
+      <ContactContent />
+    </PageShell>
   );
 };
 

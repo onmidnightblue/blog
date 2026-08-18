@@ -1,62 +1,32 @@
-export type ContactTargetId =
-  | "person"
-  | "medal"
-  | "building"
-  | "phone"
-  | "letter"
-  | "github";
-
-export type ContactTarget = {
-  id: ContactTargetId;
-  label: string;
-  description: string;
-  href: string;
-  external?: boolean;
+export type ContactCredit = {
+  role: string;
+  line?: string;
+  href?: string;
 };
 
-export const CONTACT_TARGETS: ContactTarget[] = [
+export const CONTACT_CREDITS: ContactCredit[] = [
   {
-    id: "person",
-    label: "About",
-    description: "Who I am and what I do.",
-    href: "https://github.com",
-    external: true,
+    role: "Name",
+    line: "Soojin Kim",
   },
   {
-    id: "medal",
-    label: "Highlights",
-    description: "Awards and milestones worth sharing.",
-    href: "https://github.com",
-    external: true,
+    role: "Phone",
+    line: "+82 1022500789",
   },
   {
-    id: "building",
-    label: "Work",
-    description: "Companies and teams I've built with.",
-    href: "https://github.com",
-    external: true,
+    role: "Email",
+    href: "soojin.record@gmail.com",
   },
   {
-    id: "phone",
-    label: "Phone",
-    description: "Call or message when timing matters.",
-    href: "tel:+82000000000",
+    role: "GitHub",
+    href: "https://github.com/onmidnightblue",
   },
   {
-    id: "letter",
-    label: "Email",
-    description: "Drop a note — I read every message.",
-    href: "mailto:hello@example.com",
+    role: "Work",
+    line: "Companies and teams I've built with.",
   },
   {
-    id: "github",
-    label: "GitHub",
-    description: "Repos, contributions, and side projects.",
-    href: "https://github.com",
-    external: true,
+    role: "Skill",
+    line: "Companies and teams I've built with.",
   },
 ];
-
-export const CONTACT_TARGET_MAP = Object.fromEntries(
-  CONTACT_TARGETS.map((target) => [target.id, target]),
-) as Record<ContactTargetId, ContactTarget>;

@@ -14,6 +14,17 @@ export interface BoardPost {
   body?: string;
 }
 
+export interface BoardHeading {
+  id: string;
+  text: string;
+  level: 2 | 3;
+}
+
+export interface BoardPostSummary {
+  id: string;
+  title: string;
+}
+
 export interface BoardPostsResponse {
   success: boolean;
   posts: BoardPost[];

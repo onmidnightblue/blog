@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
-import { PORTFOLIO_NAV_ITEMS } from "@constants";
+import { useEffect, useLayoutEffect, useState, type ReactNode } from "react";
+import { isPortfolioNavItemActive, PORTFOLIO_NAV_ITEMS } from "@constants";
 
 const HamburgerIcon = () => (
   <svg
@@ -52,14 +52,19 @@ const CloseIcon = () => (
 );
 
 const PortfolioNav = ({ footer }: { footer?: ReactNode }) => {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "";
   const [isOpen, setIsOpen] = useState(false);
   const [prevPathname, setPrevPathname] = useState(pathname);
+  const [isReady, setIsReady] = useState(false);
 
   if (pathname !== prevPathname) {
     setPrevPathname(pathname);
     setIsOpen(false);
   }
+
+  useLayoutEffect(() => {
+    setIsReady(true);
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
@@ -68,10 +73,8 @@ const PortfolioNav = ({ footer }: { footer?: ReactNode }) => {
     };
   }, [isOpen]);
 
-  const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname.startsWith(href);
-  };
+  const isActive = (href: string) =>
+    isReady && isPortfolioNavItemActive(pathname, href);
 
   const closeMenu = () => setIsOpen(false);
   const toggleMenu = () => setIsOpen((prev) => !prev);
@@ -134,6 +137,7 @@ const PortfolioNav = ({ footer }: { footer?: ReactNode }) => {
               key={href}
               href={href}
               onClick={closeMenu}
+              aria-current={isActive(href) ? "page" : undefined}
               className={`px-3 py-2.5 rounded-md text-sm font-medium capitalize ${
                 isActive(href)
                   ? "bg-foreground text-background"

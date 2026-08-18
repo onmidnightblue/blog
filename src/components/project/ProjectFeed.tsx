@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Keyboard } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperInstance } from "swiper";
 import { SmallLoadingSpinner } from "@components/common";
-import { useProjects } from "@hooks";
+import { PAGE_PADDING_X } from "@components/layout/PageShell";
+import { usePageHorizontalPaddingPx, useProjects } from "@hooks";
 import ProjectCard from "./ProjectCard";
 
 import "swiper/css";
@@ -38,8 +39,15 @@ const ChevronRightIcon = () => (
   </svg>
 );
 
+const applySlideOffset = (instance: SwiperInstance, offset: number) => {
+  instance.params.slidesOffsetBefore = offset;
+  instance.params.slidesOffsetAfter = offset;
+  instance.update();
+};
+
 const ProjectFeed = ({ isAdmin = false }: Props) => {
-  const [swiper, setSwiper] = useState<SwiperInstance | null>(null);
+  const slideOffset = usePageHorizontalPaddingPx();
+  const swiperRef = useRef<SwiperInstance | null>(null);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
   const {
@@ -65,9 +73,16 @@ const ProjectFeed = ({ isAdmin = false }: Props) => {
     setIsEnd(progress >= 0.999 && !hasNextPage);
   };
 
+  useEffect(() => {
+    const instance = swiperRef.current;
+    if (!instance) return;
+
+    applySlideOffset(instance, slideOffset);
+  }, [slideOffset]);
+
   if (isLoading) {
     return (
-      <div className="flex h-full items-center justify-center px-4 md:px-12">
+      <div className={`flex h-full items-center justify-center ${PAGE_PADDING_X}`}>
         <SmallLoadingSpinner />
       </div>
     );
@@ -75,7 +90,7 @@ const ProjectFeed = ({ isAdmin = false }: Props) => {
 
   if (isError) {
     return (
-      <p className="flex h-full items-center justify-center px-4 md:px-12 text-sm text-center text-error">
+      <p className={`flex h-full items-center justify-center ${PAGE_PADDING_X} text-sm text-center text-error`}>
         Failed to load projects. Please try again later.
       </p>
     );
@@ -83,7 +98,7 @@ const ProjectFeed = ({ isAdmin = false }: Props) => {
 
   if (projects.length === 0) {
     return (
-      <div className="mx-4 md:mx-12 flex h-full flex-col items-center justify-center px-6 text-center border border-dashed border-foreground/10 rounded-md">
+      <div className={`mx-4 md:mx-12 flex h-full flex-col items-center justify-center px-6 text-center border border-dashed border-foreground/10 rounded-md`}>
         <p className="text-foreground-muted">No projects yet.</p>
       </div>
     );
@@ -91,7 +106,7 @@ const ProjectFeed = ({ isAdmin = false }: Props) => {
 
   return (
     <div className="project-feed flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-      <div className="min-h-0 flex-1 overflow-hidden pb-3">
+      <div className="min-h-0 flex-1 overflow-hidden pb-3 select-none">
         <Swiper
           className="project-feed-swiper h-full w-full"
           modules={[Keyboard]}
@@ -101,12 +116,16 @@ const ProjectFeed = ({ isAdmin = false }: Props) => {
           }}
           slidesPerView="auto"
           spaceBetween={16}
-          slidesOffsetBefore={48}
-          slidesOffsetAfter={48}
+          slidesOffsetBefore={slideOffset}
+          slidesOffsetAfter={slideOffset}
+          simulateTouch
+          preventClicks
+          preventClicksPropagation
           nested
           touchStartPreventDefault={false}
           onSwiper={(instance) => {
-            setSwiper(instance);
+            swiperRef.current = instance;
+            applySlideOffset(instance, slideOffset);
             updateNavState(instance);
           }}
           onReachEnd={handleLoadMore}
@@ -142,16 +161,19 @@ const ProjectFeed = ({ isAdmin = false }: Props) => {
           aria-label="Previous project"
           className="project-feed-nav"
           disabled={isBeginning}
-          onClick={() => swiper?.slidePrev()}
+          onClick={() => swiperRef.current?.slidePrev()}
         >
           <ChevronLeftIcon />
         </button>
+        <p className="hidden px-4 text-center text-xs text-foreground-muted md:block">
+          Drag or use arrow keys
+        </p>
         <button
           type="button"
           aria-label="Next project"
           className="project-feed-nav"
           disabled={isEnd}
-          onClick={() => swiper?.slideNext()}
+          onClick={() => swiperRef.current?.slideNext()}
         >
           <ChevronRightIcon />
         </button>

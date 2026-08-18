@@ -3,11 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import { TextStyleKit } from "@tiptap/extension-text-style";
 import { FormEvent, useState } from "react";
 import { useBoardMutations } from "@hooks";
 import { normalizeBoardBodyHtml } from "@utils";
+import AdminEditorHeader from "@components/admin/AdminEditorHeader";
 import EditorToolbar from "./EditorToolbar";
 
 interface Props {
@@ -17,6 +19,13 @@ interface Props {
   initialSummary?: string;
   initialContent?: string;
   submitLabel?: string;
+  formId?: string;
+  backLink?: {
+    href: string;
+    label: string;
+  };
+  pageTitle?: string;
+  pageDescription?: string;
 }
 
 const BoardEditor = ({
@@ -26,6 +35,10 @@ const BoardEditor = ({
   initialSummary = "",
   initialContent = "",
   submitLabel = "Save",
+  formId = "board-editor-form",
+  backLink,
+  pageTitle,
+  pageDescription,
 }: Props) => {
   const router = useRouter();
   const { createPost, updatePost } = useBoardMutations();
@@ -37,6 +50,10 @@ const BoardEditor = ({
   const editor = useEditor({
     extensions: [
       StarterKit,
+      Image.configure({
+        inline: false,
+        allowBase64: false,
+      }),
       TextStyleKit.configure({
         backgroundColor: false,
         fontFamily: false,
@@ -87,7 +104,24 @@ const BoardEditor = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+    <>
+      {backLink ? (
+        <AdminEditorHeader
+          pageTitle={pageTitle}
+          pageDescription={pageDescription}
+          backLink={backLink}
+          formId={formId}
+          submitButtonLabel={isSubmitting ? "Saving..." : submitLabel}
+          isSubmitting={isSubmitting}
+          innerClassName="mx-auto w-full max-w-4xl"
+        />
+      ) : null}
+
+      <form
+        id={formId}
+        onSubmit={handleSubmit}
+        className="mx-auto flex max-w-4xl flex-col gap-6"
+      >
       <div className="flex flex-col gap-2">
         <label htmlFor="title" className="text-sm font-medium text-foreground">
           Title
@@ -98,7 +132,7 @@ const BoardEditor = ({
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           placeholder="Enter a title"
-          className="w-full px-4 py-3 text-base border border-foreground/15 rounded-md md:transition-colors md:duration-300 md:focus:border-foreground"
+          className="w-full rounded-md border border-foreground/15 px-4 py-3 text-base md:transition-colors md:duration-300 md:focus:border-foreground"
           required
         />
       </div>
@@ -113,7 +147,7 @@ const BoardEditor = ({
           onChange={(event) => setSummary(event.target.value)}
           placeholder="One-line summary for the list"
           rows={2}
-          className="w-full px-4 py-3 text-base border border-foreground/15 rounded-md resize-none md:transition-colors md:duration-300 md:focus:border-foreground"
+          className="w-full resize-none rounded-md border border-foreground/15 px-4 py-3 text-base md:transition-colors md:duration-300 md:focus:border-foreground"
         />
       </div>
 
@@ -127,28 +161,35 @@ const BoardEditor = ({
           value={tags}
           onChange={(event) => setTags(event.target.value)}
           placeholder="Frontend, Next.js (comma-separated)"
-          className="w-full px-4 py-3 text-base border border-foreground/15 rounded-md md:transition-colors md:duration-300 md:focus:border-foreground"
+          className="w-full rounded-md border border-foreground/15 px-4 py-3 text-base md:transition-colors md:duration-300 md:focus:border-foreground"
         />
       </div>
 
       <div className="flex flex-col gap-2">
         <label className="text-sm font-medium text-foreground">Body</label>
-        <div className="border border-foreground/10 rounded-md overflow-hidden">
-          <EditorToolbar editor={editor} />
-          <EditorContent editor={editor} />
+        <div className="flex overflow-hidden rounded-md border border-foreground/10">
+          <div className="w-min shrink-0">
+            <EditorToolbar editor={editor} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <EditorContent editor={editor} />
+          </div>
         </div>
       </div>
 
-      <div className="flex justify-end">
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="px-5 py-2.5 text-sm font-medium text-background bg-foreground rounded-md disabled:opacity-50 md:transition-colors md:duration-300 md:hover:bg-foreground/90"
-        >
-          {isSubmitting ? "Saving..." : submitLabel}
-        </button>
-      </div>
+      {!backLink ? (
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="rounded-md bg-foreground px-5 py-2.5 text-sm font-medium text-background disabled:opacity-50 md:transition-colors md:duration-300 md:hover:bg-foreground/90"
+          >
+            {isSubmitting ? "Saving..." : submitLabel}
+          </button>
+        </div>
+      ) : null}
     </form>
+    </>
   );
 };
 
