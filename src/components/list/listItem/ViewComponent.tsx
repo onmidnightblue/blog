@@ -48,12 +48,12 @@ const ViewComponent = ({ restaurant }: Props) => {
   return (
     <>
       {isOpenComment && (
-        <div className="fixed inset-0 z-999 bg-white transition-transform duration-300 transform translate-x-0 top-[86px] sm:top-[96px] left-[8px] sm:left-[16px] border h-[calc(100vh-92px)] flex flex-col sm:h-[calc(100vh-112px)] sm:w-120 w-[calc(100%-16px)]">
-          <div className="flex items-center p-4 border-b">
-            <button onClick={() => setIsOpenComment(false)} className="mr-4">
+        <div className="fixed inset-0 z-999 bg-white transition-transform duration-300 transform translate-x-0 top-22 sm:top-24 sm:left-4 left-2 border sm:h-[calc(100dvh-112px)] h-[calc(100dvh-96px)] flex flex-col sm:w-120 w-[calc(100%-16px)]">
+          <div className="flex items-center px-4 py-3 sm:px-4 border-b">
+            <button className='flex items-center gap-2' onClick={() => setIsOpenComment(false)}>
               <div className="w-0 h-0 border-y-7 border-r-9 border-t-transparent border-b-transparent" />
+              <h2 className="font-bold">{name}</h2>
             </button>
-            <h2 className="font-bold">{name}</h2>
           </div>
           <div className="p-4 overflow-y-scroll">
             <Comment restaurant={restaurant} />

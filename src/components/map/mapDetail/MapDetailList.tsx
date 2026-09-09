@@ -140,7 +140,7 @@ const MapDetailList = ({
   }, [isMobile]);
 
   return (
-    <div className="flex flex-col gap-2 w-full bg-white border p-6 pointer-events-auto">
+    <div className="flex flex-col gap-2 w-full bg-white border p-4 sm:p-6 pointer-events-auto">
       <div className="text-md mb-1 flex justify-between">
         <div className="flex gap-1">
           <FlagIcon />

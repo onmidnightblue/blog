@@ -69,7 +69,7 @@ const List = ({ isAdmin }: Props) => {
   }
 
   return (
-    <div>
+    <div className="pt-24">
       <p className="px-4 pt-4 text-center font-bold">
         {restaurants.length || 0} restaurants
       </p>
