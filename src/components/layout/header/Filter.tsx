@@ -62,7 +62,7 @@ const Filter = ({}) => {
             <option key={`${time}:00`} value={time} />
           ))}
         </datalist> */}
-        <select
+        {/* <select
           id="appt-time"
           name="appt-time"
           value={targetTimeFilter?.time || "11:30"}
@@ -78,7 +78,17 @@ const Filter = ({}) => {
               {time}
             </option>
           ))}
-        </select>
+        </select> */}
+        <label htmlFor="appt-time">방문 시간: </label>
+        <input
+          id="appt-time"
+          type="time"
+          name="appt-time"
+          step="1800"
+          value={targetTimeFilter?.time || "11:30"}
+          onChange={(e) => handleTimeChange(e.target.value)}
+          className="w-full p-2 text-sm border border-foreground/30 rounded-md outline-none bg-transparent"
+        />
       </div>
       <div className="flex flex-col gap-2">
         <p className="text-sm text-foreground-muted">구비 요건</p>
