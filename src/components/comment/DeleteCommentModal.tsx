@@ -45,7 +45,6 @@ const DeleteCommentModal = ({ commentId, onClose, onDelete }: Props) => {
           <div className="flex-1 border-r px-2 py-1">비밀번호</div>
           <div className="flex-2 px-2 py-1">
             <InnerInput
-              autoFocus
               type="password"
               inputMode="numeric"
               pattern="[0-9]*"
