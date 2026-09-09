@@ -1,4 +1,4 @@
-import { DAY_LABELS, KEYWORD_CATEGORY } from "@constants";
+import { DAY_LABELS } from "@constants";
 import { useRestaurantStore } from "@store";
 
 const Filter = ({}) => {
@@ -27,8 +27,8 @@ const Filter = ({}) => {
   return (
     <div className="bg-white p-4 border flex flex-col gap-4 h-full overflow-y-scroll">
       <div className="flex flex-col gap-2">
-        <p className="text-sm text-foreground-muted">방문시간</p>
-        <div className="flex gap-2 overflow-x-auto relative">
+        <p className="text-sm text-foreground-muted">방문 시간</p>
+        <div className="flex gap-2 overflow-x-auto relative [&::-webkit-scrollbar]:hidden">
           {DAY_LABELS.map((label, idx) => {
             const isActive = targetTimeFilter?.day === idx;
             return (
@@ -43,21 +43,23 @@ const Filter = ({}) => {
               </button>
             );
           })}
-          {targetTimeFilter && (
-            <button
-              onClick={() => setTargetTimeFilter(null)}
-              className="text-blue-400 absolute right-0 top-1/2 -translate-y-1/2 cursor-pointer"
-            >
-              초기화
-            </button>
-          )}
         </div>
-        <input
+        {/* <input
           type="time"
-          value={targetTimeFilter?.time || "12:00"}
+          step='1800'
+          value={targetTimeFilter?.time || "11:30"}
           onChange={(e) => handleTimeChange(e.target.value)}
-          className="w-full p-2 text-sm border rounded-md outline-none focus:ring-2 focus:ring-blue-500/20"
-        />
+          className="w-full p-2 text-sm border border-foreground/30 rounded-md outline-none"
+        /> */}
+        <label htmlFor="appt-time">방문 시간: </label>
+        <input id="appt-time" list="times" type="time" name="appt-time" value={targetTimeFilter?.time || "11:30"} onChange={(e) => handleTimeChange(e.target.value)} step="1800" />
+        <datalist id="times">
+          {Array.from({ length: 24 }, (_, i) => 
+          `${String((i + 1) % 24).padStart(2, '0')}:00`
+        ).map((time) => (
+            <option key={`${time}:00`} value={time} />
+          ))}
+        </datalist>
       </div>
       <div className="flex flex-col gap-2">
         <p className="text-sm text-foreground-muted">구비 요건</p>
@@ -81,32 +83,16 @@ const Filter = ({}) => {
         </div>
       </div>
       <div className="flex flex-col gap-2">
-        <p className="text-sm text-foreground-muted">주요 품목</p>
+        <p className="text-sm text-foreground-muted">메뉴</p>
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => toggleCategory("")}
             className={`${BADGE_BASE} ${
-              // selectedCategory === null ? BADGE_ACTIVE : BADGE_INACTIVE
               selectedCategories.length === 0 ? BADGE_ACTIVE : BADGE_INACTIVE
             }`}
           >
             <span>전체</span>
           </button>
-          {/* {KEYWORD_CATEGORY.map(({ Icon, title }) => {
-            const isActive = selectedCategory === title;
-            return (
-              <div
-                key={`panel-${title}`}
-                onClick={() => toggleCategory(title)}
-                className={`${BADGE_BASE} ${
-                  isActive ? BADGE_ACTIVE : BADGE_INACTIVE
-                }`}
-              >
-                {Icon && <Icon />}
-                <span className="break-keep">{title}</span>
-              </div>
-            );
-          })} */}
           {categories.map((category) => {
             const isActive = selectedCategories.includes(category);
             return (
