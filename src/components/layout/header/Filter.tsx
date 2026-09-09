@@ -52,14 +52,33 @@ const Filter = ({}) => {
           className="w-full p-2 text-sm border border-foreground/30 rounded-md outline-none"
         /> */}
         <label htmlFor="appt-time">방문 시간: </label>
-        <input id="appt-time" list="times" type="time" name="appt-time" value={targetTimeFilter?.time || "11:30"} onChange={(e) => handleTimeChange(e.target.value)} step="1800" />
+        {/* <input id="appt-time" list="times" type="time" name="appt-time" value={targetTimeFilter?.time || "11:30"} onChange={(e) => handleTimeChange(e.target.value)} step="1800" />
         <datalist id="times">
-          {Array.from({ length: 24 }, (_, i) => 
-          `${String((i + 1) % 24).padStart(2, '0')}:00`
-        ).map((time) => (
+          {Array.from({ length: 48 }, (_, i) => {
+            const hour = String(Math.floor(i / 2)).padStart(2, '0');
+            const minute = i % 2 === 0 ? '00' : '30';
+            return `${hour}:${minute}`;
+          }).map((time) => (
             <option key={`${time}:00`} value={time} />
           ))}
-        </datalist>
+        </datalist> */}
+        <select
+          id="appt-time"
+          name="appt-time"
+          value={targetTimeFilter?.time || "11:30"}
+          onChange={(e) => handleTimeChange(e.target.value)}
+          className="w-full p-2 text-sm border border-foreground/30 rounded-md outline-none bg-transparent"
+        >
+          {Array.from({ length: 48 }, (_, i) => {
+            const hour = String(Math.floor(i / 2)).padStart(2, '0');
+            const minute = i % 2 === 0 ? '00' : '30';
+            return `${hour}:${minute}`;
+          }).map((time) => (
+            <option key={time} value={time}>
+              {time}
+            </option>
+          ))}
+        </select>
       </div>
       <div className="flex flex-col gap-2">
         <p className="text-sm text-foreground-muted">구비 요건</p>
